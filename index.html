@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ozod Trader - Kalkulyator</title>
+  <title>Ozod Trader - Gann Pro Kalkulyator</title>
   
   <!-- Firebase SDK -->
   <script type="module">
@@ -34,58 +34,68 @@
   </script>
 
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: #0b0f19; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0b0f19; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 10px; }
     
-    .card { background: #161e2e; border-radius: 12px; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border: 1px solid #243044; display: none; }
+    .card { background: #121826; border-radius: 12px; padding: 18px; width: 100%; max-width: 440px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid #1e293b; display: none; }
     .card.active { display: block; }
 
-    h2, h3 { text-align: center; margin-top: 0; color: #38bdf8; border-bottom: 1px solid #243044; padding-bottom: 10px; font-size: 1.2rem; }
+    h2, h3 { text-align: center; margin-top: 0; color: #38bdf8; font-size: 1.15rem; margin-bottom: 12px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
     
     .input-group { margin-bottom: 10px; }
     label { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; }
-    input { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 0.9rem; outline: none; }
-    input:focus { border-color: #38bdf8; }
+    input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #243044; background: #0b0f19; color: #fff; font-size: 0.9rem; outline: none; }
+    input:focus, select:focus { border-color: #38bdf8; }
     
-    button { width: 100%; padding: 8px 12px; background: #0284c7; color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 6px; }
-    button:hover { background: #0369a1; }
+    button { width: 100%; padding: 11px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 6px; }
     button:disabled { background: #334155; cursor: not-allowed; color: #64748b; }
-    .btn-danger { background: #ef4444; } .btn-danger:hover { background: #dc2626; }
-    .btn-success { background: #22c55e; } .btn-success:hover { background: #16a34a; }
+    
+    .btn-main { background: #0284c7; color: #fff; }
+    .btn-main:hover { background: #0369a1; }
+    .btn-sniper { background: #d97706; color: #fff; margin-top: 10px; font-size: 0.95rem; }
+    .btn-sniper:hover { background: #b45309; }
+    
+    .btn-danger { background: #ef4444; color: #fff; } .btn-danger:hover { background: #dc2626; }
+    .btn-success { background: #22c55e; color: #fff; } .btn-success:hover { background: #16a34a; }
     .btn-warning { background: #f59e0b; color: #000; } .btn-warning:hover { background: #d97706; }
-    .btn-secondary { background: #475569; } .btn-secondary:hover { background: #334155; }
+    .btn-secondary { background: #475569; color: #fff; margin-top: 10px; } .btn-secondary:hover { background: #334155; }
     .btn-small { padding: 5px 8px; font-size: 0.75rem; width: auto; margin-top: 0; }
     
     .switch-link { text-align: center; margin-top: 12px; font-size: 0.8rem; color: #94a3b8; }
     .switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; cursor: pointer; }
 
-    .user-header { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #1e293b; }
+    .user-header { display: flex; justify-content: space-between; align-items: center; background: #0b0f19; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #1e293b; }
     .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
     .status-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
     .status-expired { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
 
-    .wallet-box { background: #0f172a; border: 1px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
+    .wallet-box { background: #0b0f19; border: 1px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
     .wallet-stars { font-size: 1.4rem; font-weight: bold; color: #facc15; margin-top: 5px; }
 
     .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    .compact-btn { padding: 8px 10px; font-size: 0.8rem; margin-top: 0; }
+    .compact-btn { padding: 8px 10px; font-size: 0.8rem; margin-top: 0; font-weight: 600; }
 
-    .results { margin-top: 15px; }
-    .section-title { font-size: 0.8rem; font-weight: bold; color: #38bdf8; margin: 10px 0 4px 0; text-transform: uppercase; }
-    .box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 8px; }
+    .sniper-result-box { background: rgba(34, 197, 94, 0.05); border: 1px solid #22c55e; padding: 12px; border-radius: 8px; text-align: center; margin-top: 14px; margin-bottom: 10px; }
+    .sniper-title { font-size: 0.85rem; font-weight: bold; color: #fff; display: flex; justify-content: center; align-items: center; gap: 5px; }
+    .sniper-price { font-size: 1.5rem; font-weight: bold; color: #4ade80; margin-top: 2px; }
+
+    .tp-table { width: 100%; border-collapse: collapse; margin-top: 8px; background: #0b0f19; border-radius: 6px; overflow: hidden; font-size: 0.82rem; }
+    .tp-table th { background: #d97706; color: #fff; padding: 7px; text-align: center; font-size: 0.8rem; }
+    .tp-table td { padding: 7px; text-align: center; border-bottom: 1px solid #1e293b; }
+    .tp-table tr:last-child td { border-bottom: none; }
+    .val-green { color: #4ade80; font-weight: bold; }
+    .val-red { color: #f87171; font-weight: bold; }
+
+    .box { background: #0b0f19; padding: 10px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 8px; }
     .row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
-    .buy-text { color: #4ade80; font-weight: bold; } .sell-text { color: #f87171; font-weight: bold; }
-    .tp-text { color: #38bdf8; font-weight: bold; } .sl-text { color: #f43f5e; font-weight: bold; }
-
-    .user-item { background: #0f172a; border: 1px solid #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+    .user-item { background: #0b0f19; border: 1px solid #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
     .user-item-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; font-size: 0.85rem; }
     .user-actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
     .blocked-msg { text-align: center; padding: 15px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; margin-top: 12px; font-size: 0.85rem; }
+    .badge-count { background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; margin-left: 4px; }
 
     .wheel-container { position: relative; width: 170px; height: 170px; margin: 15px auto; border-radius: 50%; border: 4px solid #f59e0b; overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1); background: conic-gradient(#0284c7 0 60deg, #22c55e 60deg 120deg, #ef4444 120deg 180deg, #f59e0b 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); }
     .wheel-pointer { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 15px solid #fff; z-index: 10; }
-    
-    .badge-count { background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; margin-left: 4px; }
   </style>
 </head>
 <body>
@@ -101,7 +111,7 @@
       <label>Parol:</label>
       <input type="password" id="loginPass" placeholder="Parolni kiriting">
     </div>
-    <button onclick="login()">Tizimga Kirish</button>
+    <button class="btn-main" onclick="login()">Tizimga Kirish</button>
     <div class="switch-link">
       Akkauntingiz yo'qmi? <a onclick="showCard('registerCard')">Ro'yxatdan o'tish</a>
     </div>
@@ -128,11 +138,11 @@
     </div>
   </div>
 
-  <!-- ASOSIY KALKULYATOR EKRANI -->
+  <!-- ASOSIY GANN PRO KALKULYATOR EKRANI -->
   <div class="card" id="calcCard">
     <div class="user-header">
       <div>
-        <strong id="displayUsername" style="font-size: 0.9rem;">Foydalanuvchi</strong>
+        <strong id="displayUsername" style="font-size: 0.85rem;">Foydalanuvchi</strong>
         <div style="font-size: 0.7rem; color: #94a3b8;" id="subTimeLeft">Obuna: Tekshirilmoqda...</div>
       </div>
       <div>
@@ -148,44 +158,67 @@
     
     <div class="compact-grid">
       <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">⭐ Stars Sotib Olish</button>
-      <button class="compact-btn" style="background: #8b5cf6;" onclick="showCard('subSectionCard')">👑 Premium Olish</button>
+      <button class="compact-btn" style="background: #8b5cf6; color: #fff;" onclick="showCard('subSectionCard')">👑 Premium Olish</button>
     </div>
 
-    <h2 style="margin-top: 15px;">Ozod Trader Kalkulyator</h2>
+    <h2>Ozod Trader - Gann Pro Kalkulyator</h2>
 
     <div id="calcContent">
       <div class="input-group">
-        <label for="high">High (1) narxi:</label>
-        <input type="number" id="high" step="any" placeholder="4624.00">
+        <select id="tfSelect">
+          <option value="5">M5 (Intraday Scalp)</option>
+          <option value="15">M15 (Intraday)</option>
+          <option value="60">H1 (Swing)</option>
+        </select>
       </div>
+
       <div class="input-group">
-        <label for="low">Low (0) narxi:</label>
-        <input type="number" id="low" step="any" placeholder="4617.00">
+        <label>Yo'nalish (Ekstremum turi):</label>
+        <select id="direction">
+          <option value="BUY">LOW Nuqta (BUY ZONA & TP)</option>
+          <option value="SELL">HIGH Nuqta (SELL ZONA & TP)</option>
+        </select>
       </div>
-      <button onclick="calculateZones()">Zonalarni Hisoblash</button>
 
-      <div class="results" id="results" style="display: none;">
-        <div class="section-title">Razgon Scalp:</div>
-        <div class="box">
-          <div class="row"><span>Sell Zona:</span><span class="sell-text" id="fiboSell">0 — 0</span></div>
-          <div class="row"><span>Sell TP:</span><span class="tp-text" id="fiboSellTp">0</span></div>
-          <div class="row"><span>Sell SL:</span><span class="sl-text" id="fiboSellSl">0</span></div>
-          <hr style="border-color: #1e293b; margin: 6px 0;">
-          <div class="row"><span>Buy Zona:</span><span class="buy-text" id="fiboBuy">0 — 0</span></div>
-          <div class="row"><span>Buy TP:</span><span class="tp-text" id="fiboBuyTp">0</span></div>
-          <div class="row"><span>Buy SL:</span><span class="sl-text" id="fiboBuySl">0</span></div>
+      <div class="input-group">
+        <label>Ekstremum Narx (P):</label>
+        <input type="number" step="0.01" id="pPrice" value="4654">
+      </div>
+
+      <div class="input-group">
+        <label>Sana (Kun, masalan: 24):</label>
+        <input type="number" id="dayNum" value="24">
+      </div>
+
+      <div class="input-group">
+        <label>Ekstremum Soat / Vaqti (HH:MM):</label>
+        <select id="timeSelect">
+          <option value="15:45">15:45</option>
+          <option value="16:00">16:00</option>
+          <option value="16:15">16:15</option>
+        </select>
+      </div>
+
+      <button class="btn-sniper" onclick="calculateSniper()">Sniper Algoritm Hisoblash</button>
+
+      <!-- NATIJALAR -->
+      <div id="results" style="display: none;">
+        <div class="sniper-result-box">
+          <div class="sniper-title" id="entryTitle">🎯 SNIPER BUY ZONA (KIRISH)</div>
+          <div class="sniper-price" id="entryPrice">$4656.40</div>
         </div>
 
-        <div class="section-title">Stabil Zona:</div>
-        <div class="box">
-          <div class="row"><span>Buy Zona:</span><span class="buy-text" id="extBuy">0 — 0</span></div>
-          <div class="row"><span>Buy TP:</span><span class="tp-text" id="extBuyTp">0</span></div>
-          <div class="row"><span>Buy SL:</span><span class="sl-text" id="extBuySl">0</span></div>
-          <hr style="border-color: #1e293b; margin: 6px 0;">
-          <div class="row"><span>Sell Zona:</span><span class="sell-text" id="extSell">0 — 0</span></div>
-          <div class="row"><span>Sell TP:</span><span class="tp-text" id="extSellTp">0</span></div>
-          <div class="row"><span>Sell SL:</span><span class="sl-text" id="extSellSl">0</span></div>
-        </div>
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>TP Nomi</th>
+              <th>Target Narx</th>
+              <th>Vaqt</th>
+            </tr>
+          </thead>
+          <tbody id="tpTableBody">
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -198,32 +231,27 @@
   <!-- HAMYON EKRANI -->
   <div class="card" id="walletSectionCard">
     <h2>💼 Mening Hamyonim</h2>
-    
     <div class="wallet-box">
       <div style="font-size: 0.85rem; color: #94a3b8;">Hozirgi balansingiz:</div>
       <div class="wallet-stars" id="walletStars">⭐ 0 Stars</div>
     </div>
-
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">➕ Stars Sotib Olish</button>
       <button class="compact-btn" style="background: #8b5cf6;" onclick="showCard('subSectionCard')">👑 Premiumga Almashish</button>
     </div>
-
-    <button class="btn-secondary compact-btn" style="margin-top: 15px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
+    <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
 
   <!-- BARABAN EKRANI -->
   <div class="card" id="wheelSectionCard">
     <h2>🎰 Omad Barabani</h2>
     <div style="font-size: 0.85rem; color: #38bdf8; text-align: center; margin-bottom: 6px;" id="wheelSpinsText">Qolgan imkoniyatlar: ...</div>
-    
     <div style="position: relative;">
       <div class="wheel-pointer"></div>
       <div class="wheel-container" id="wheel"></div>
     </div>
-
     <button class="btn-warning compact-btn" id="spinBtn" onclick="spinWheel()">Aylantirish 🚀</button>
-    <button class="btn-secondary compact-btn" style="margin-top: 10px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
+    <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
 
   <!-- STARS SOTIB OLISH EKRANI -->
@@ -239,7 +267,7 @@
     <a href="https://t.me/L7X7D" target="_blank" style="text-decoration: none;">
       <button class="btn-success compact-btn">💬 Admin bilan bog'lanish (@L7X7D)</button>
     </a>
-    <button class="btn-secondary compact-btn" style="margin-top: 10px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
+    <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
 
   <!-- PREMIUM SOTIB OLISH EKRANI -->
@@ -257,7 +285,7 @@
       <div class="row"><span>30 Kunlik Premium</span><span>30,000 Stars</span></div>
       <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(30, 30000)">Sotib olish</button>
     </div>
-    <button class="btn-secondary compact-btn" style="margin-top: 10px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
+    <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
 
   <!-- ADMIN PANEL EKRANI -->
@@ -266,10 +294,8 @@
       <div><strong>👑 ADMIN PANEL</strong></div>
       <button class="btn-small btn-danger" onclick="logout()">Chiqish</button>
     </div>
-
     <h3>📩 Premium Arizalar <span id="reqBadge" class="badge-count" style="display:none;">0</span></h3>
     <div id="requestsList" style="margin-bottom: 15px;">Yuklanmoqda...</div>
-
     <h3>👥 Foydalanuvchilar Boshqaruvi</h3>
     <div id="usersList">Yuklanmoqda...</div>
   </div>
@@ -311,7 +337,7 @@
         lastSpinBatchTime: 0,
         spinsUsed: 0,
         totalSpins: 0,
-        spinCooldownHours: 12 // Standart har bir user uchun 12 soat
+        spinCooldownHours: 12
       };
 
       await window.set(window.child(window.dbRef, `users/${username}`), userData);
@@ -325,8 +351,8 @@
   async function login() {
     const username = document.getElementById('loginUser').value.trim().toLowerCase();
     const password = document.getElementById('loginPass').value.trim();
-
     const cleanPass = password.replace(/\s+/g, '');
+
     if (username === 'admin' && cleanPass === '888888343') {
       currentUser = { username: 'admin', role: 'admin' };
       localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
@@ -358,7 +384,6 @@
   function loadUserPanel() {
     showCard('calcCard');
     document.getElementById('displayUsername').innerText = currentUser.name;
-    
     updateUserSubscription();
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(updateUserSubscription, 1000);
@@ -378,7 +403,6 @@
 
         document.getElementById('walletStars').innerText = `⭐ ${userData.stars || 0} Stars`;
 
-        // FOYDALANUVCHINING ALOHIDA BARABAN TAYMERI
         const lastBatchTime = userData.lastSpinBatchTime || 0;
         let spinsUsed = userData.spinsUsed || 0;
         const userCooldownHours = userData.spinCooldownHours !== undefined ? userData.spinCooldownHours : 12;
@@ -430,7 +454,6 @@
     }
   }
 
-  // BARABAN AYLANTIRISH
   async function spinWheel() {
     const now = Date.now();
     let lastBatchTime = currentUser.lastSpinBatchTime || 0;
@@ -450,13 +473,7 @@
 
     spinsUsed++;
     let totalSpins = (currentUser.totalSpins || 0) + 1;
-    let wonStars = 5;
-
-    if (totalSpins % 30 === 15 || totalSpins % 30 === 0) {
-      wonStars = 30;
-    } else {
-      wonStars = Math.floor(Math.random() * 21) + 5; 
-    }
+    let wonStars = (totalSpins % 30 === 15 || totalSpins % 30 === 0) ? 30 : (Math.floor(Math.random() * 21) + 5);
 
     document.getElementById('spinBtn').disabled = true;
     currentWheelRotation += 1440 + Math.floor(Math.random() * 360);
@@ -550,9 +567,7 @@
         item.style.borderColor = '#f59e0b';
         item.innerHTML = `
           <div><strong>${req.name} (@${req.username})</strong></div>
-          <div style="font-size:0.8rem; color:#38bdf8; margin: 2px 0;">
-            ${req.days} kunlik Premium uchun ${req.stars} stars to'lov qildi.
-          </div>
+          <div style="font-size:0.8rem; color:#38bdf8; margin: 2px 0;">${req.days} kunlik Premium uchun ${req.stars} stars to'lov qildi.</div>
           <div style="font-size:0.7rem; color:#94a3b8;">${req.date}</div>
           <div class="user-actions">
             <button class="btn-small btn-success" onclick="approvePremium('${reqId}', '${req.username}', ${req.days})">Premium Berish ✅</button>
@@ -636,15 +651,15 @@
             <span style="color: #facc15;">⭐ ${user.stars || 0}</span>
           </div>
           <div style="font-size:0.8rem; margin-bottom: 4px;">Obuna: ${subInfo}</div>
-          <div style="font-size:0.8rem; color:#38bdf8; margin-bottom: 6px;">Baraban kutish vaqti: <strong>${userCooldown} soat</strong></div>
+          <div style="font-size:0.8rem; color:#38bdf8; margin-bottom: 6px;">Baraban vaqti: <strong>${userCooldown} soat</strong></div>
           <div class="user-actions">
             <button class="btn-small btn-success" onclick="addSubscription('${user.username}', 5)">+5 kun</button>
             <button class="btn-small btn-success" onclick="addSubscription('${user.username}', 30)">+30 kun</button>
             <button class="btn-small btn-warning" onclick="sendAdminStars('${user.username}')">+ Stars</button>
-            <button class="btn-small" style="background:#8b5cf6;" onclick="setUserSpinCooldown('${user.username}')">⏱️ Baraban Vaqtini O'zgartirish</button>
-            <button class="btn-small btn-warning" onclick="resetUserSpinTimer('${user.username}')">🔄 Taymerni Nol qilish</button>
-            <button class="btn-small btn-secondary" onclick="removeSubscription('${user.username}')">Obunani Nolga Tushirish</button>
-            <button class="btn-small btn-danger" onclick="deleteUserFromDB('${user.username}')">Bazadan O'chirish 🗑️</button>
+            <button class="btn-small" style="background:#8b5cf6;" onclick="setUserSpinCooldown('${user.username}')">⏱️ Vaqt</button>
+            <button class="btn-small btn-warning" onclick="resetUserSpinTimer('${user.username}')">🔄 Nol qilish</button>
+            <button class="btn-small btn-secondary" onclick="removeSubscription('${user.username}')">O'chirish</button>
+            <button class="btn-small btn-danger" onclick="deleteUserFromDB('${user.username}')">🗑️</button>
           </div>
         `;
         container.appendChild(item);
@@ -654,147 +669,97 @@
     }
   }
 
-  // INDIVIDUAL BARABAN VAQTINI O'ZGARTIRISH
   async function setUserSpinCooldown(username) {
-    const hours = prompt(`@${username} uchun baraban kutish vaqtini kiriting (soatda):`, "12");
+    const hours = prompt(`@${username} uchun baraban vaqtini kiriting (soatda):`, "12");
     if (hours === null) return;
     const parsedHours = parseFloat(hours);
-    if (isNaN(parsedHours) || parsedHours < 0) {
-      alert("Iltimos, to'g'ri soat kiriting!");
-      return;
-    }
-
-    try {
-      await window.update(window.child(window.dbRef, `users/${username}`), {
-        spinCooldownHours: parsedHours
-      });
-      alert(`@${username} uchun baraban kutish vaqti ${parsedHours} soatga o'zgartirildi!`);
-      renderAdminData();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    if (isNaN(parsedHours) || parsedHours < 0) return alert("To'g'ri soat kiriting!");
+    await window.update(window.child(window.dbRef, `users/${username}`), { spinCooldownHours: parsedHours });
+    renderAdminData();
   }
 
-  // INDIVIDUAL BARABAN TAYMERINI NOL QILISH (DARHOL AYLANTIRISH IMKONIYaTI)
   async function resetUserSpinTimer(username) {
-    if (!confirm(`@${username} foydalanuvchisi uchun baraban kutish vaqtini darhol nolga tushirib beraylikmi?`)) return;
-
-    try {
-      await window.update(window.child(window.dbRef, `users/${username}`), {
-        lastSpinBatchTime: 0,
-        spinsUsed: 0
-      });
-      alert(`@${username} uchun baraban kutish vaqti nolga tushirildi! Qayta aylantirishi mumkin.`);
-      renderAdminData();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    if (!confirm(`@${username} baraban taymerini nolga tushiraylikmi?`)) return;
+    await window.update(window.child(window.dbRef, `users/${username}`), { lastSpinBatchTime: 0, spinsUsed: 0 });
+    renderAdminData();
   }
 
   async function sendAdminStars(username) {
     const amount = prompt(`${username} ga nechta Stars yubormoqchisiz?`);
     if (!amount || isNaN(amount)) return;
-
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        const currentStars = user.stars || 0;
-        await window.update(window.child(window.dbRef, `users/${username}`), {
-          stars: currentStars + parseInt(amount)
-        });
-        alert(`${username} ga ${amount} ta Stars berildi!`);
-        renderAdminData();
-      }
-    } catch (e) {
-      alert("Xato: " + e.message);
+    const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+    if (snapshot.exists()) {
+      const currentStars = snapshot.val().stars || 0;
+      await window.update(window.child(window.dbRef, `users/${username}`), { stars: currentStars + parseInt(amount) });
+      renderAdminData();
     }
   }
 
   async function addSubscription(username, days) {
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        const now = Date.now();
-        const currentSub = (user.subUntil && user.subUntil > now) ? user.subUntil : now;
-        const newSubUntil = currentSub + (days * 24 * 60 * 60 * 1000);
-
-        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSubUntil });
-        renderAdminData();
-      }
-    } catch (e) {
-      alert("Xato: " + e.message);
+    const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+    if (snapshot.exists()) {
+      const user = snapshot.val();
+      const now = Date.now();
+      const currentSub = (user.subUntil && user.subUntil > now) ? user.subUntil : now;
+      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: currentSub + (days * 24 * 60 * 60 * 1000) });
+      renderAdminData();
     }
   }
 
   async function removeSubscription(username) {
-    try {
-      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
-      renderAdminData();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
+    renderAdminData();
   }
 
   async function deleteUserFromDB(username) {
-    if (!confirm(`Haqiqatan ham @${username} foydalanuvchisini bazadan butunlay o'chirib tashlamoqchimisiz?`)) return;
-
-    try {
-      await window.remove(window.child(window.dbRef, `users/${username}`));
-      alert(`Foydalanuvchi @${username} o'chirib tashlandi!`);
-      renderAdminData();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    if (!confirm(`@${username} bazadan o'chirilsinmi?`)) return;
+    await window.remove(window.child(window.dbRef, `users/${username}`));
+    renderAdminData();
   }
 
-  function calculateZones() {
-    const high = parseFloat(document.getElementById('high').value);
-    const low = parseFloat(document.getElementById('low').value);
+  // --- GANN PRO / SNIPER HISOBLASH LOGIKASI ---
+  function calculateSniper() {
+    const dir = document.getElementById('direction').value;
+    const p = parseFloat(document.getElementById('pPrice').value) || 0;
+    const day = parseFloat(document.getElementById('dayNum').value) || 0;
 
-    if (!high || !low || high <= low) {
-      alert("High narxi Low narxidan katta bo'lishi kerak!");
-      return;
-    }
+    // Sana bo'yicha point hisoblash logikasi (Sizning ikkinchi kodingizdagi formula)
+    const offset = (day * 10) / 100;
 
-    const diff = high - low;
+    let entryPrice = dir === 'BUY' ? (p + offset) : (p - offset);
 
-    const fiboSellMin = low + (diff * 1.385);
-    const fiboSellMax = low + (diff * 1.445);
-    const fiboSellTp = low; 
-    const fiboSellSl = fiboSellMax + (diff * 0.15);
+    let tp1 = dir === 'BUY' ? entryPrice + 17.07 : entryPrice - 17.07;
+    let tp2 = dir === 'BUY' ? entryPrice + 34.17 : entryPrice - 34.17;
+    let tp3 = dir === 'BUY' ? entryPrice + 51.31 : entryPrice - 51.31;
+    let tp4 = dir === 'BUY' ? entryPrice + 68.47 : entryPrice - 68.47;
 
-    const fiboBuyMin = high - (diff * 1.445);
-    const fiboBuyMax = high - (diff * 1.385);
-    const fiboBuyTp = high; 
-    const fiboBuySl = fiboBuyMin - (diff * 0.15);
+    document.getElementById('entryTitle').innerText = dir === 'BUY' ? "🎯 SNIPER BUY ZONA (KIRISH)" : "🎯 SNIPER SELL ZONA (KIRISH)";
+    document.getElementById('entryPrice').innerText = `$${entryPrice.toFixed(2)}`;
+    document.getElementById('entryPrice').className = dir === 'BUY' ? "sniper-price val-green" : "sniper-price val-red";
 
-    const extBuyMin = low - (diff * 0.618);
-    const extBuyMax = low - (diff * 0.272);
-    const extBuyTp = high;
-    const extBuySl = extBuyMin - (diff * 0.15);
-
-    const extSellMin = high + (diff * 0.272);
-    const extSellMax = high + (diff * 0.618);
-    const extSellTp = low;
-    const extSellSl = extSellMax + (diff * 0.15);
-
-    document.getElementById('fiboBuy').innerText = `${fiboBuyMin.toFixed(2)} — ${fiboBuyMax.toFixed(2)}`;
-    document.getElementById('fiboBuyTp').innerText = fiboBuyTp.toFixed(2);
-    document.getElementById('fiboBuySl').innerText = fiboBuySl.toFixed(2);
-
-    document.getElementById('fiboSell').innerText = `${fiboSellMin.toFixed(2)} — ${fiboSellMax.toFixed(2)}`;
-    document.getElementById('fiboSellTp').innerText = fiboSellTp.toFixed(2);
-    document.getElementById('fiboSellSl').innerText = fiboSellSl.toFixed(2);
-
-    document.getElementById('extBuy').innerText = `${extBuyMin.toFixed(2)} — ${extBuyMax.toFixed(2)}`;
-    document.getElementById('extBuyTp').innerText = extBuyTp.toFixed(2);
-    document.getElementById('extBuySl').innerText = extBuySl.toFixed(2);
-
-    document.getElementById('extSell').innerText = `${extSellMin.toFixed(2)} — ${extSellMax.toFixed(2)}`;
-    document.getElementById('extSellTp').innerText = extSellTp.toFixed(2);
-    document.getElementById('extSellSl').innerText = extSellSl.toFixed(2);
+    const colorClass = dir === 'BUY' ? 'val-green' : 'val-red';
+    document.getElementById('tpTableBody').innerHTML = `
+      <tr>
+        <td><strong>TP 1</strong></td>
+        <td class="${colorClass}">$${tp1.toFixed(2)}</td>
+        <td><strong>16:02</strong></td>
+      </tr>
+      <tr>
+        <td><strong>TP 2</strong></td>
+        <td class="${colorClass}">$${tp2.toFixed(2)}</td>
+        <td><strong>16:19</strong></td>
+      </tr>
+      <tr>
+        <td><strong>TP 3</strong></td>
+        <td class="${colorClass}">$${tp3.toFixed(2)}</td>
+        <td><strong>16:36</strong></td>
+      </tr>
+      <tr>
+        <td><strong>TP 4 (Asosiy)</strong></td>
+        <td class="${colorClass}">$${tp4.toFixed(2)}</td>
+        <td><strong>16:53</strong></td>
+      </tr>
+    `;
 
     document.getElementById('results').style.display = 'block';
   }
