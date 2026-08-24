@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ozod Trader - Gann Pro Kalkulyator</title>
+  <title>Ozod Trader - Kalkulyator</title>
   
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, get, child, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyARQU4MpXsISoAIDDn-OFzkOCGrf2w17UY",
@@ -30,6 +30,7 @@
     window.get = get;
     window.child = child;
     window.update = update;
+    window.remove = remove;
   </script>
 
   <style>
@@ -39,15 +40,15 @@
     .card { background: #161e2e; border-radius: 12px; padding: 20px; width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); border: 1px solid #243044; display: none; }
     .card.active { display: block; }
 
-    h2, h3 { text-align: center; margin-top: 0; color: #f59e0b; border-bottom: 1px solid #243044; padding-bottom: 10px; font-size: 1.2rem; }
+    h2, h3 { text-align: center; margin-top: 0; color: #38bdf8; border-bottom: 1px solid #243044; padding-bottom: 10px; font-size: 1.2rem; }
     
     .input-group { margin-bottom: 10px; }
-    label { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
-    input, select { width: 100%; padding: 9px 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 0.9rem; outline: none; }
-    input:focus, select:focus { border-color: #f59e0b; }
+    label { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; }
+    input { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 0.9rem; outline: none; }
+    input:focus { border-color: #38bdf8; }
     
-    button { width: 100%; padding: 10px 12px; background: #d97706; color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 6px; }
-    button:hover { background: #b45309; }
+    button { width: 100%; padding: 8px 12px; background: #0284c7; color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 6px; }
+    button:hover { background: #0369a1; }
     button:disabled { background: #334155; cursor: not-allowed; color: #64748b; }
     .btn-danger { background: #ef4444; } .btn-danger:hover { background: #dc2626; }
     .btn-success { background: #22c55e; } .btn-success:hover { background: #16a34a; }
@@ -56,7 +57,7 @@
     .btn-small { padding: 5px 8px; font-size: 0.75rem; width: auto; margin-top: 0; }
     
     .switch-link { text-align: center; margin-top: 12px; font-size: 0.8rem; color: #94a3b8; }
-    .switch-link a { color: #f59e0b; text-decoration: none; font-weight: bold; cursor: pointer; }
+    .switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; cursor: pointer; }
 
     .user-header { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #1e293b; }
     .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
@@ -69,22 +70,22 @@
     .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .compact-btn { padding: 8px 10px; font-size: 0.8rem; margin-top: 0; }
 
-    .sniper-box { background: #0f172a; border: 2px solid #22c55e; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; }
-    .sniper-box.sell-box { border-color: #ef4444; }
-    .sniper-title { font-size: 0.85rem; color: #94a3b8; font-weight: bold; text-transform: uppercase; }
-    .sniper-value { font-size: 1.3rem; font-weight: bold; color: #4ade80; margin-top: 4px; }
-    .sniper-box.sell-box .sniper-value { color: #f87171; }
+    .results { margin-top: 15px; }
+    .section-title { font-size: 0.8rem; font-weight: bold; color: #38bdf8; margin: 10px 0 4px 0; text-transform: uppercase; }
+    .box { background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 8px; }
+    .row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
+    .buy-text { color: #4ade80; font-weight: bold; } .sell-text { color: #f87171; font-weight: bold; }
+    .tp-text { color: #38bdf8; font-weight: bold; } .sl-text { color: #f43f5e; font-weight: bold; }
 
-    table { width: 100%; margin-top: 15px; border-collapse: collapse; background: #0f172a; border-radius: 8px; overflow: hidden; }
-    th, td { border: 1px solid #334155; padding: 8px; text-align: center; font-size: 0.85rem; }
-    th { background: #d97706; color: white; font-weight: 600; }
-    .buy-theme { color: #4ade80; font-weight: bold; }
-    .sell-theme { color: #f87171; font-weight: bold; }
-
+    .user-item { background: #0f172a; border: 1px solid #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
+    .user-item-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; font-size: 0.85rem; }
+    .user-actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
     .blocked-msg { text-align: center; padding: 15px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; margin-top: 12px; font-size: 0.85rem; }
 
     .wheel-container { position: relative; width: 170px; height: 170px; margin: 15px auto; border-radius: 50%; border: 4px solid #f59e0b; overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1); background: conic-gradient(#0284c7 0 60deg, #22c55e 60deg 120deg, #ef4444 120deg 180deg, #f59e0b 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); }
     .wheel-pointer { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 15px solid #fff; z-index: 10; }
+    
+    .badge-count { background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; margin-left: 4px; }
   </style>
 </head>
 <body>
@@ -140,7 +141,6 @@
       </div>
     </div>
 
-    <!-- TUGMALAR GRID -->
     <div class="compact-grid">
       <button class="compact-btn btn-warning" onclick="showCard('walletSectionCard')">💼 Hamyon</button>
       <button class="compact-btn" style="background: #38bdf8; color: #000;" onclick="showCard('wheelSectionCard')">🎰 Baraban</button>
@@ -151,45 +151,42 @@
       <button class="compact-btn" style="background: #8b5cf6;" onclick="showCard('subSectionCard')">👑 Premium Olish</button>
     </div>
 
-    <h2 style="margin-top: 15px;">Gann Cycle Algorithm</h2>
+    <h2 style="margin-top: 15px;">Ozod Trader Kalkulyator</h2>
 
     <div id="calcContent">
       <div class="input-group">
-        <label>Timeframe (Grafik vaqti):</label>
-        <select id="tf">
-            <option value="M1">M1 (Micro Scalping)</option>
-            <option value="M5" selected>M5 (Intraday Scalp)</option>
-            <option value="M15">M15 (Day Trading)</option>
-            <option value="H1">H1 (Swing / Main Trend)</option>
-        </select>
+        <label for="high">High (1) narxi:</label>
+        <input type="number" id="high" step="any" placeholder="4624.00">
       </div>
-
       <div class="input-group">
-        <label>Yo'nalish (Ekstremum turi):</label>
-        <select id="direction">
-            <option value="BUY">LOW Nuqta (BUY ZONA & TP)</option>
-            <option value="SELL">HIGH Nuqta (SELL ZONA & TP)</option>
-        </select>
+        <label for="low">Low (0) narxi:</label>
+        <input type="number" id="low" step="any" placeholder="4617.00">
       </div>
+      <button onclick="calculateZones()">Zonalarni Hisoblash</button>
 
-      <div class="input-group">
-        <label>Ekstremum Narx (P):</label>
-        <input type="number" id="price" step="any" placeholder="Masalan: 4654.42">
+      <div class="results" id="results" style="display: none;">
+        <div class="section-title">Razgon Scalp:</div>
+        <div class="box">
+          <div class="row"><span>Sell Zona:</span><span class="sell-text" id="fiboSell">0 — 0</span></div>
+          <div class="row"><span>Sell TP:</span><span class="tp-text" id="fiboSellTp">0</span></div>
+          <div class="row"><span>Sell SL:</span><span class="sl-text" id="fiboSellSl">0</span></div>
+          <hr style="border-color: #1e293b; margin: 6px 0;">
+          <div class="row"><span>Buy Zona:</span><span class="buy-text" id="fiboBuy">0 — 0</span></div>
+          <div class="row"><span>Buy TP:</span><span class="tp-text" id="fiboBuyTp">0</span></div>
+          <div class="row"><span>Buy SL:</span><span class="sl-text" id="fiboBuySl">0</span></div>
+        </div>
+
+        <div class="section-title">Stabil Zona:</div>
+        <div class="box">
+          <div class="row"><span>Buy Zona:</span><span class="buy-text" id="extBuy">0 — 0</span></div>
+          <div class="row"><span>Buy TP:</span><span class="tp-text" id="extBuyTp">0</span></div>
+          <div class="row"><span>Buy SL:</span><span class="sl-text" id="extBuySl">0</span></div>
+          <hr style="border-color: #1e293b; margin: 6px 0;">
+          <div class="row"><span>Sell Zona:</span><span class="sell-text" id="extSell">0 — 0</span></div>
+          <div class="row"><span>Sell TP:</span><span class="tp-text" id="extSellTp">0</span></div>
+          <div class="row"><span>Sell SL:</span><span class="sl-text" id="extSellSl">0</span></div>
+        </div>
       </div>
-
-      <div class="input-group">
-        <label>Sana (Kun, masalan: 24):</label>
-        <input type="number" id="dayInput" min="1" max="31" placeholder="Masalan: 24">
-      </div>
-
-      <div class="input-group">
-        <label>Ekstremum Soat / Vaqti (HH:MM):</label>
-        <input type="time" id="time">
-      </div>
-
-      <button onclick="calculateGann()">Sniper Algoritm Hisoblash</button>
-
-      <div id="result"></div>
     </div>
 
     <div id="blockedMessage" class="blocked-msg" style="display: none;">
@@ -201,14 +198,17 @@
   <!-- HAMYON EKRANI -->
   <div class="card" id="walletSectionCard">
     <h2>💼 Mening Hamyonim</h2>
+    
     <div class="wallet-box">
       <div style="font-size: 0.85rem; color: #94a3b8;">Hozirgi balansingiz:</div>
       <div class="wallet-stars" id="walletStars">⭐ 0 Stars</div>
     </div>
+
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">➕ Stars Sotib Olish</button>
       <button class="compact-btn" style="background: #8b5cf6;" onclick="showCard('subSectionCard')">👑 Premiumga Almashish</button>
     </div>
+
     <button class="btn-secondary compact-btn" style="margin-top: 15px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
 
@@ -216,10 +216,12 @@
   <div class="card" id="wheelSectionCard">
     <h2>🎰 Omad Barabani</h2>
     <div style="font-size: 0.85rem; color: #38bdf8; text-align: center; margin-bottom: 6px;" id="wheelSpinsText">Qolgan imkoniyatlar: ...</div>
+    
     <div style="position: relative;">
       <div class="wheel-pointer"></div>
       <div class="wheel-container" id="wheel"></div>
     </div>
+
     <button class="btn-warning compact-btn" id="spinBtn" onclick="spinWheel()">Aylantirish 🚀</button>
     <button class="btn-secondary compact-btn" style="margin-top: 10px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
@@ -227,9 +229,9 @@
   <!-- STARS SOTIB OLISH EKRANI -->
   <div class="card" id="shopSectionCard">
     <h2>⭐ Stars Sotib Olish</h2>
-    <div class="wallet-box" style="text-align: left;">
-      <div style="display:flex; justify-content:space-between; margin-bottom: 6px;"><span>7,000 Stars</span><span style="color: #4ade80; font-weight: bold;">10$</span></div>
-      <div style="display:flex; justify-content:space-between;"><span>30,000 Stars</span><span style="color: #4ade80; font-weight: bold;">30$</span></div>
+    <div class="box">
+      <div class="row"><span>7,000 Stars</span><span style="color: #4ade80; font-weight: bold;">10$</span></div>
+      <div class="row"><span>30,000 Stars</span><span style="color: #4ade80; font-weight: bold;">30$</span></div>
     </div>
     <p style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-bottom: 12px;">
       Stars sotib olish uchun telegram orqali admin bilan bog'laning!
@@ -243,25 +245,40 @@
   <!-- PREMIUM SOTIB OLISH EKRANI -->
   <div class="card" id="subSectionCard">
     <h2>👑 Premium Xarid Qilish</h2>
-    <div class="wallet-box" style="text-align: left; margin-bottom: 8px;">
-      <div style="display:flex; justify-content:space-between;"><span>1 Kunlik Premium</span><span>777 Stars</span></div>
-      <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(1, 777)">Sotib olish</button>
+    <div class="box">
+      <div class="row"><span>1 Kunlik Premium</span><span>777 Stars</span></div>
+      <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(1, 777)">Sotib olish</button>
     </div>
-    <div class="wallet-box" style="text-align: left; margin-bottom: 8px;">
-      <div style="display:flex; justify-content:space-between;"><span>7 Kunlik Premium</span><span>7,000 Stars</span></div>
-      <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(7, 7000)">Sotib olish</button>
+    <div class="box">
+      <div class="row"><span>7 Kunlik Premium</span><span>7,000 Stars</span></div>
+      <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(7, 7000)">Sotib olish</button>
     </div>
-    <div class="wallet-box" style="text-align: left; margin-bottom: 8px;">
-      <div style="display:flex; justify-content:space-between;"><span>30 Kunlik Premium</span><span>30,000 Stars</span></div>
-      <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(30, 30000)">Sotib olish</button>
+    <div class="box">
+      <div class="row"><span>30 Kunlik Premium</span><span>30,000 Stars</span></div>
+      <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(30, 30000)">Sotib olish</button>
     </div>
     <button class="btn-secondary compact-btn" style="margin-top: 10px;" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
+  </div>
+
+  <!-- ADMIN PANEL EKRANI -->
+  <div class="card" id="adminCard">
+    <div class="user-header">
+      <div><strong>👑 ADMIN PANEL</strong></div>
+      <button class="btn-small btn-danger" onclick="logout()">Chiqish</button>
+    </div>
+
+    <h3>📩 Premium Arizalar <span id="reqBadge" class="badge-count" style="display:none;">0</span></h3>
+    <div id="requestsList" style="margin-bottom: 15px;">Yuklanmoqda...</div>
+
+    <h3>👥 Foydalanuvchilar Boshqaruvi</h3>
+    <div id="usersList">Yuklanmoqda...</div>
   </div>
 
 <script>
   let currentUser = JSON.parse(localStorage.getItem('ot_fb_user')) || null;
   let timerInterval = null;
   let currentWheelRotation = 0;
+  let previousRequestsCount = 0;
 
   function showCard(cardId) {
     document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -293,7 +310,8 @@
         stars: 0,
         lastSpinBatchTime: 0,
         spinsUsed: 0,
-        totalSpins: 0
+        totalSpins: 0,
+        spinCooldownHours: 12 // Standart har bir user uchun 12 soat
       };
 
       await window.set(window.child(window.dbRef, `users/${username}`), userData);
@@ -307,6 +325,14 @@
   async function login() {
     const username = document.getElementById('loginUser').value.trim().toLowerCase();
     const password = document.getElementById('loginPass').value.trim();
+
+    const cleanPass = password.replace(/\s+/g, '');
+    if (username === 'admin' && cleanPass === '888888343') {
+      currentUser = { username: 'admin', role: 'admin' };
+      localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
+      loadAdminPanel();
+      return;
+    }
 
     try {
       const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
@@ -352,12 +378,14 @@
 
         document.getElementById('walletStars').innerText = `⭐ ${userData.stars || 0} Stars`;
 
+        // FOYDALANUVCHINING ALOHIDA BARABAN TAYMERI
         const lastBatchTime = userData.lastSpinBatchTime || 0;
         let spinsUsed = userData.spinsUsed || 0;
-        const sixHours = 6 * 60 * 60 * 1000; // 6 SOATGA O'ZGARTIRILDI
+        const userCooldownHours = userData.spinCooldownHours !== undefined ? userData.spinCooldownHours : 12;
+        const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
-        if (now - lastBatchTime >= sixHours) {
-          spinsUsed = 0;
+        if (now - lastBatchTime >= cooldownMs) {
+          spinsUsed = 0; 
         }
 
         const remainingSpins = 3 - spinsUsed;
@@ -367,7 +395,7 @@
           document.getElementById('wheelSpinsText').innerText = `Imkoniyat: ${remainingSpins} / 3 marta`;
           spinBtn.disabled = false;
         } else {
-          const waitDiff = sixHours - (now - lastBatchTime);
+          const waitDiff = cooldownMs - (now - lastBatchTime);
           const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
           const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
           const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
@@ -402,34 +430,32 @@
     }
   }
 
-  // YANGI BARABAN AYLANTIRISH MANTIG'I
+  // BARABAN AYLANTIRISH
   async function spinWheel() {
     const now = Date.now();
     let lastBatchTime = currentUser.lastSpinBatchTime || 0;
     let spinsUsed = currentUser.spinsUsed || 0;
-    const sixHours = 6 * 60 * 60 * 1000;
+    const userCooldownHours = currentUser.spinCooldownHours !== undefined ? currentUser.spinCooldownHours : 12;
+    const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
-    if (now - lastBatchTime >= sixHours) {
+    if (now - lastBatchTime >= cooldownMs) {
       spinsUsed = 0;
       lastBatchTime = now;
     }
 
     if (spinsUsed >= 3) {
-      alert("Siz 3 ta imkoniyatdan foydalandingiz! 6 soatdan keyin qayta urinib ko'ring.");
+      alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${userCooldownHours} soatdan keyin qayta urinib ko'ring.`);
       return;
     }
 
     spinsUsed++;
     let totalSpins = (currentUser.totalSpins || 0) + 1;
-    let wonStars = 0;
+    let wonStars = 5;
 
-    // YUTUQ HISOBI: Har 5-marta aylantirganda 150 Stars, aks holda (1->50, 2->60, 3->15)
-    if (totalSpins % 5 === 0) {
-      wonStars = 150;
+    if (totalSpins % 30 === 15 || totalSpins % 30 === 0) {
+      wonStars = 30;
     } else {
-      if (spinsUsed === 1) wonStars = 50;
-      else if (spinsUsed === 2) wonStars = 60;
-      else if (spinsUsed === 3) wonStars = 15;
+      wonStars = Math.floor(Math.random() * 21) + 5; 
     }
 
     document.getElementById('spinBtn').disabled = true;
@@ -479,110 +505,307 @@
     }
   }
 
-  // ANIQ SANA PIPS ALGORITMI
-  function calculateGann() {
-    const price = parseFloat(document.getElementById('price').value);
-    const dayVal = parseFloat(document.getElementById('dayInput').value);
-    const timeStr = document.getElementById('time').value;
-    const tf = document.getElementById('tf').value;
-    const dir = document.getElementById('direction').value;
-    
-    if (!price || !timeStr || !dayVal) { 
-        alert("Iltimos, narx, sana va vaqtni kiriting!"); 
-        return; 
+  function loadAdminPanel() {
+    showCard('adminCard');
+    renderAdminData();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(renderAdminData, 3000);
+  }
+
+  async function renderAdminData() {
+    renderRequestsList();
+    renderUsersList();
+  }
+
+  async function renderRequestsList() {
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `requests`));
+      const container = document.getElementById('requestsList');
+      const badge = document.getElementById('reqBadge');
+      container.innerHTML = "";
+
+      if (!snapshot.exists()) {
+        container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Arizalar mavjud emas</p>";
+        badge.style.display = 'none';
+        previousRequestsCount = 0;
+        return;
+      }
+
+      const requests = snapshot.val();
+      const reqKeys = Object.keys(requests);
+      const currentCount = reqKeys.length;
+
+      if (currentCount > previousRequestsCount && previousRequestsCount !== 0) {
+        alert("📩 Yangi Premium so'rovi tushdi!");
+      }
+      previousRequestsCount = currentCount;
+
+      badge.innerText = currentCount;
+      badge.style.display = 'inline-block';
+
+      reqKeys.forEach(reqId => {
+        const req = requests[reqId];
+        const item = document.createElement('div');
+        item.className = 'user-item';
+        item.style.borderColor = '#f59e0b';
+        item.innerHTML = `
+          <div><strong>${req.name} (@${req.username})</strong></div>
+          <div style="font-size:0.8rem; color:#38bdf8; margin: 2px 0;">
+            ${req.days} kunlik Premium uchun ${req.stars} stars to'lov qildi.
+          </div>
+          <div style="font-size:0.7rem; color:#94a3b8;">${req.date}</div>
+          <div class="user-actions">
+            <button class="btn-small btn-success" onclick="approvePremium('${reqId}', '${req.username}', ${req.days})">Premium Berish ✅</button>
+            <button class="btn-small btn-danger" onclick="rejectPremium('${reqId}', '${req.username}', ${req.stars})">Rad Etish ❌</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    } catch (e) {
+      console.log(e.message);
     }
+  }
 
-    // Aniq Pips hisobi (1 Pip = 0.10$)
-    const pipsAdded = dayVal * 0.10; 
+  async function approvePremium(reqId, username, days) {
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (snapshot.exists()) {
+        const user = snapshot.val();
+        const now = Date.now();
+        const currentSub = (user.subUntil && user.subUntil > now) ? user.subUntil : now;
+        const newSubUntil = currentSub + (days * 24 * 60 * 60 * 1000);
 
-    let entryZone = 0;
-    if (dir === 'BUY') {
-        entryZone = price + pipsAdded; // BUY: Low + (Sana * 0.10$)
-    } else {
-        entryZone = price - pipsAdded; // SELL: High - (Sana * 0.10$)
+        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSubUntil });
+        await window.remove(window.child(window.dbRef, `requests/${reqId}`));
+        alert(`${username} ga ${days} kunlik Premium berildi!`);
+        renderAdminData();
+      }
+    } catch (e) {
+      alert("Xato: " + e.message);
     }
+  }
 
-    const root = Math.sqrt(price);
-    const [hours, minutes] = timeStr.split(':').map(Number);
-
-    let configs = [];
-    if (tf === 'M1') {
-        configs = [
-            { label: "TP 1", pFactor: 0.0625, tFactor: 0.125 },
-            { label: "TP 2", pFactor: 0.1250, tFactor: 0.250 },
-            { label: "TP 3", pFactor: 0.2500, tFactor: 0.500 }
-        ];
-    } else if (tf === 'M5') {
-        configs = [
-            { label: "TP 1", pFactor: 0.1250, tFactor: 0.250 },
-            { label: "TP 2", pFactor: 0.2500, tFactor: 0.500 },
-            { label: "TP 3", pFactor: 0.3750, tFactor: 0.750 },
-            { label: "TP 4 (Asosiy)", pFactor: 0.5000, tFactor: 1.000 }
-        ];
-    } else if (tf === 'M15') {
-        configs = [
-            { label: "TP 1", pFactor: 0.2500, tFactor: 0.500 },
-            { label: "TP 2", pFactor: 0.5000, tFactor: 1.000 },
-            { label: "TP 3", pFactor: 0.7500, tFactor: 1.500 },
-            { label: "TP 4 (Max)", pFactor: 1.0000, tFactor: 2.000 }
-        ];
-    } else if (tf === 'H1') {
-        configs = [
-            { label: "TP 1", pFactor: 0.5000, tFactor: 1.000 },
-            { label: "TP 2", pFactor: 1.0000, tFactor: 2.000 },
-            { label: "TP 3", pFactor: 1.5000, tFactor: 3.000 },
-            { label: "TP 4 (Full)", pFactor: 2.0000, tFactor: 4.000 }
-        ];
+  async function rejectPremium(reqId, username, stars) {
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (snapshot.exists()) {
+        const user = snapshot.val();
+        await window.update(window.child(window.dbRef, `users/${username}`), { stars: (user.stars || 0) + stars });
+      }
+      await window.remove(window.child(window.dbRef, `requests/${reqId}`));
+      alert("Ariza rad etildi va Stars qaytarib berildi!");
+      renderAdminData();
+    } catch (e) {
+      alert("Xato: " + e.message);
     }
+  }
 
-    const boxClass = dir === 'BUY' ? 'sniper-box' : 'sniper-box sell-box';
-    const zoneTitle = dir === 'BUY' ? '🎯 SNIPER BUY ZONA (Kirish)' : '🎯 SNIPER SELL ZONA (Kirish)';
+  async function renderUsersList() {
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `users`));
+      const container = document.getElementById('usersList');
+      container.innerHTML = "";
 
-    let html = `
-    <div class="${boxClass}">
-      <div class="sniper-title">${zoneTitle}</div>
-      <div class="sniper-value">$${entryZone.toFixed(2)}</div>
-    </div>
-    
-    <table>
-      <tr>
-        <th>TP Nomi</th>
-        <th>Target Narx</th>
-        <th>Vaqt</th>
-      </tr>`;
+      if (!snapshot.exists()) {
+        container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Foydalanuvchilar topilmadi</p>";
+        return;
+      }
 
-    configs.forEach(c => {
-        let targetPrice = 0;
+      const usersObj = snapshot.val();
+      const now = Date.now();
 
-        if (dir === 'BUY') {
-            targetPrice = Math.pow(root + c.pFactor, 2);
-        } else {
-            targetPrice = Math.pow(root - c.pFactor, 2);
+      Object.keys(usersObj).forEach(username => {
+        const user = usersObj[username];
+        let subInfo = "<span style='color:#f87171;'>Obuna yo'q</span>";
+
+        if (user.subUntil && user.subUntil > now) {
+          const diff = user.subUntil - now;
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          subInfo = `<span style='color:#4ade80;'>Qoldi: ${days}k, ${hours}s, ${mins}m</span>`;
         }
 
-        const addMinutes = Math.round(root * c.tFactor);
-        let targetDate = new Date(2000, 0, 1, hours, minutes);
-        targetDate.setMinutes(targetDate.getMinutes() + addMinutes);
+        const userCooldown = user.spinCooldownHours !== undefined ? user.spinCooldownHours : 12;
 
-        const h = targetDate.getHours().toString().padStart(2, '0');
-        const m = targetDate.getMinutes().toString().padStart(2, '0');
+        const item = document.createElement('div');
+        item.className = 'user-item';
+        item.innerHTML = `
+          <div class="user-item-header">
+            <span>${user.name} (@${user.username})</span>
+            <span style="color: #facc15;">⭐ ${user.stars || 0}</span>
+          </div>
+          <div style="font-size:0.8rem; margin-bottom: 4px;">Obuna: ${subInfo}</div>
+          <div style="font-size:0.8rem; color:#38bdf8; margin-bottom: 6px;">Baraban kutish vaqti: <strong>${userCooldown} soat</strong></div>
+          <div class="user-actions">
+            <button class="btn-small btn-success" onclick="addSubscription('${user.username}', 5)">+5 kun</button>
+            <button class="btn-small btn-success" onclick="addSubscription('${user.username}', 30)">+30 kun</button>
+            <button class="btn-small btn-warning" onclick="sendAdminStars('${user.username}')">+ Stars</button>
+            <button class="btn-small" style="background:#8b5cf6;" onclick="setUserSpinCooldown('${user.username}')">⏱️ Baraban Vaqtini O'zgartirish</button>
+            <button class="btn-small btn-warning" onclick="resetUserSpinTimer('${user.username}')">🔄 Taymerni Nol qilish</button>
+            <button class="btn-small btn-secondary" onclick="removeSubscription('${user.username}')">Obunani Nolga Tushirish</button>
+            <button class="btn-small btn-danger" onclick="deleteUserFromDB('${user.username}')">Bazadan O'chirish 🗑️</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
 
-        const priceClass = dir === 'BUY' ? 'buy-theme' : 'sell-theme';
+  // INDIVIDUAL BARABAN VAQTINI O'ZGARTIRISH
+  async function setUserSpinCooldown(username) {
+    const hours = prompt(`@${username} uchun baraban kutish vaqtini kiriting (soatda):`, "12");
+    if (hours === null) return;
+    const parsedHours = parseFloat(hours);
+    if (isNaN(parsedHours) || parsedHours < 0) {
+      alert("Iltimos, to'g'ri soat kiriting!");
+      return;
+    }
 
-        html += `<tr>
-            <td><b>${c.label}</b></td>
-            <td class="${priceClass}">$${targetPrice.toFixed(2)}</td>
-            <td><b>${h}:${m}</b></td>
-        </tr>`;
-    });
+    try {
+      await window.update(window.child(window.dbRef, `users/${username}`), {
+        spinCooldownHours: parsedHours
+      });
+      alert(`@${username} uchun baraban kutish vaqti ${parsedHours} soatga o'zgartirildi!`);
+      renderAdminData();
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
 
-    html += "</table>";
-    document.getElementById('result').innerHTML = html;
+  // INDIVIDUAL BARABAN TAYMERINI NOL QILISH (DARHOL AYLANTIRISH IMKONIYaTI)
+  async function resetUserSpinTimer(username) {
+    if (!confirm(`@${username} foydalanuvchisi uchun baraban kutish vaqtini darhol nolga tushirib beraylikmi?`)) return;
+
+    try {
+      await window.update(window.child(window.dbRef, `users/${username}`), {
+        lastSpinBatchTime: 0,
+        spinsUsed: 0
+      });
+      alert(`@${username} uchun baraban kutish vaqti nolga tushirildi! Qayta aylantirishi mumkin.`);
+      renderAdminData();
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
+
+  async function sendAdminStars(username) {
+    const amount = prompt(`${username} ga nechta Stars yubormoqchisiz?`);
+    if (!amount || isNaN(amount)) return;
+
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (snapshot.exists()) {
+        const user = snapshot.val();
+        const currentStars = user.stars || 0;
+        await window.update(window.child(window.dbRef, `users/${username}`), {
+          stars: currentStars + parseInt(amount)
+        });
+        alert(`${username} ga ${amount} ta Stars berildi!`);
+        renderAdminData();
+      }
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
+
+  async function addSubscription(username, days) {
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (snapshot.exists()) {
+        const user = snapshot.val();
+        const now = Date.now();
+        const currentSub = (user.subUntil && user.subUntil > now) ? user.subUntil : now;
+        const newSubUntil = currentSub + (days * 24 * 60 * 60 * 1000);
+
+        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSubUntil });
+        renderAdminData();
+      }
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
+
+  async function removeSubscription(username) {
+    try {
+      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
+      renderAdminData();
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
+
+  async function deleteUserFromDB(username) {
+    if (!confirm(`Haqiqatan ham @${username} foydalanuvchisini bazadan butunlay o'chirib tashlamoqchimisiz?`)) return;
+
+    try {
+      await window.remove(window.child(window.dbRef, `users/${username}`));
+      alert(`Foydalanuvchi @${username} o'chirib tashlandi!`);
+      renderAdminData();
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
+
+  function calculateZones() {
+    const high = parseFloat(document.getElementById('high').value);
+    const low = parseFloat(document.getElementById('low').value);
+
+    if (!high || !low || high <= low) {
+      alert("High narxi Low narxidan katta bo'lishi kerak!");
+      return;
+    }
+
+    const diff = high - low;
+
+    const fiboSellMin = low + (diff * 1.385);
+    const fiboSellMax = low + (diff * 1.445);
+    const fiboSellTp = low; 
+    const fiboSellSl = fiboSellMax + (diff * 0.15);
+
+    const fiboBuyMin = high - (diff * 1.445);
+    const fiboBuyMax = high - (diff * 1.385);
+    const fiboBuyTp = high; 
+    const fiboBuySl = fiboBuyMin - (diff * 0.15);
+
+    const extBuyMin = low - (diff * 0.618);
+    const extBuyMax = low - (diff * 0.272);
+    const extBuyTp = high;
+    const extBuySl = extBuyMin - (diff * 0.15);
+
+    const extSellMin = high + (diff * 0.272);
+    const extSellMax = high + (diff * 0.618);
+    const extSellTp = low;
+    const extSellSl = extSellMax + (diff * 0.15);
+
+    document.getElementById('fiboBuy').innerText = `${fiboBuyMin.toFixed(2)} — ${fiboBuyMax.toFixed(2)}`;
+    document.getElementById('fiboBuyTp').innerText = fiboBuyTp.toFixed(2);
+    document.getElementById('fiboBuySl').innerText = fiboBuySl.toFixed(2);
+
+    document.getElementById('fiboSell').innerText = `${fiboSellMin.toFixed(2)} — ${fiboSellMax.toFixed(2)}`;
+    document.getElementById('fiboSellTp').innerText = fiboSellTp.toFixed(2);
+    document.getElementById('fiboSellSl').innerText = fiboSellSl.toFixed(2);
+
+    document.getElementById('extBuy').innerText = `${extBuyMin.toFixed(2)} — ${extBuyMax.toFixed(2)}`;
+    document.getElementById('extBuyTp').innerText = extBuyTp.toFixed(2);
+    document.getElementById('extBuySl').innerText = extBuySl.toFixed(2);
+
+    document.getElementById('extSell').innerText = `${extSellMin.toFixed(2)} — ${extSellMax.toFixed(2)}`;
+    document.getElementById('extSellTp').innerText = extSellTp.toFixed(2);
+    document.getElementById('extSellSl').innerText = extSellSl.toFixed(2);
+
+    document.getElementById('results').style.display = 'block';
   }
 
   window.onload = function() {
     if (currentUser) {
-      loadUserPanel();
+      if (currentUser.role === 'admin') {
+        loadAdminPanel();
+      } else {
+        loadUserPanel();
+      }
     }
   };
 </script>
