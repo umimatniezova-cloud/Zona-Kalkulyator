@@ -151,14 +151,30 @@
       </div>
     </div>
 
+    <!-- 4 TA TUGMA (HAMYON, BARABAN, STARS, PREMIUM) -->
     <div class="compact-grid">
       <button class="compact-btn btn-warning" onclick="showCard('walletSectionCard')">💼 Hamyon</button>
       <button class="compact-btn" style="background: #38bdf8; color: #000;" onclick="showCard('wheelSectionCard')">🎰 Baraban</button>
     </div>
     
-    <div class="compact-grid">
+    <div class="compact-grid" style="margin-bottom: 10px;">
       <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">⭐ Stars Sotib Olish</button>
       <button class="compact-btn" style="background: #8b5cf6; color: #fff;" onclick="showCard('subSectionCard')">👑 Premium Olish</button>
+    </div>
+
+    <!-- TUGMA: BOSILGANDA PROMOKOD KIRITISH OYNASI OCHILADI -->
+    <button class="compact-btn" style="background: #0ea5e9; color: #fff; width: 100%; margin-bottom: 12px; padding: 10px;" onclick="openPromoModal()">🎁 Promokod Kiritish</button>
+
+    <!-- PROMOKOD OYNASI (Boshida yopiq bo'ladi) -->
+    <div class="box" id="promoModalBox" style="display: none; border-color: #0ea5e9; margin-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 0.85rem; font-weight: bold; color: #38bdf8;">🎁 Promokodni kiriting</span>
+        <button class="btn-small btn-danger" style="padding: 2px 6px;" onclick="closePromoModal()">✕</button>
+      </div>
+      <div class="input-group" style="margin-bottom: 6px;">
+        <input type="text" id="mainPromoInput" placeholder="Masalan: ALGORITHM" style="text-transform: uppercase; font-size: 0.85rem; padding: 8px;">
+      </div>
+      <button class="btn-small btn-success" style="width: 100%; padding: 8px;" onclick="redeemMainPromoCode()">Faollashtirish ✅</button>
     </div>
 
     <h2>Ozod Trader - Gann Pro Kalkulyator</h2>
@@ -235,9 +251,10 @@
       <div style="font-size: 0.85rem; color: #94a3b8;">Hozirgi balansingiz:</div>
       <div class="wallet-stars" id="walletStars">⭐ 0 Stars</div>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 8px;">
+
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
       <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">➕ Stars Sotib Olish</button>
-      <button class="compact-btn" style="background: #8b5cf6;" onclick="showCard('subSectionCard')">👑 Premiumga Almashish</button>
+      <button class="compact-btn" style="background: #8b5cf6; color: #fff;" onclick="showCard('subSectionCard')">👑 Premiumga Almashish</button>
     </div>
     <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
@@ -294,8 +311,30 @@
       <div><strong>👑 ADMIN PANEL</strong></div>
       <button class="btn-small btn-danger" onclick="logout()">Chiqish</button>
     </div>
+
+    <h3>🎁 Promokod Qo'shish</h3>
+    <div class="box" style="margin-bottom: 15px;">
+      <div class="input-group">
+        <label>Promokod nomi:</label>
+        <input type="text" id="adminPromoCode" placeholder="Masalan: ALGORITHM">
+      </div>
+      <div class="input-group">
+        <label>Beriladigan Stars miqdori:</label>
+        <input type="number" id="adminPromoStars" value="200">
+      </div>
+      <div class="input-group">
+        <label>Tugash sanasi va vaqti:</label>
+        <input type="datetime-local" id="adminPromoExpire">
+      </div>
+      <button class="btn-small btn-success" style="width: 100%; margin-top: 4px;" onclick="createNewPromoCode()">Promokod Yaratish ✅</button>
+    </div>
+
+    <h3>🎟️ Faol Promokodlar</h3>
+    <div id="promoListContainer" style="margin-bottom: 15px;">Yuklanmoqda...</div>
+
     <h3>📩 Premium Arizalar <span id="reqBadge" class="badge-count" style="display:none;">0</span></h3>
     <div id="requestsList" style="margin-bottom: 15px;">Yuklanmoqda...</div>
+
     <h3>👥 Foydalanuvchilar Boshqaruvi</h3>
     <div id="usersList">Yuklanmoqda...</div>
   </div>
@@ -309,6 +348,14 @@
   function showCard(cardId) {
     document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
     document.getElementById(cardId).classList.add('active');
+  }
+
+  function openPromoModal() {
+    document.getElementById('promoModalBox').style.display = 'block';
+  }
+
+  function closePromoModal() {
+    document.getElementById('promoModalBox').style.display = 'none';
   }
 
   async function register() {
@@ -337,7 +384,8 @@
         lastSpinBatchTime: 0,
         spinsUsed: 0,
         totalSpins: 0,
-        spinCooldownHours: 12
+        spinCooldownHours: 12,
+        redeemedPromos: {}
       };
 
       await window.set(window.child(window.dbRef, `users/${username}`), userData);
@@ -454,6 +502,63 @@
     }
   }
 
+  async function processPromoActivation(rawCode) {
+    if (!rawCode) {
+      alert("Iltimos, promokodni kiriting!");
+      return;
+    }
+    const promoCode = rawCode.toLowerCase();
+
+    try {
+      // 1. Foydalanuvchi bu promokodni oldin ishlatganligini tekshirish
+      if (currentUser.redeemedPromos && currentUser.redeemedPromos[promoCode]) {
+        alert("Siz bu promokodni oldin ishlatgansiz! Uni qayta ishlatib bo'lmaydi.");
+        return;
+      }
+
+      // 2. Promokod bazada mavjudligini va muddatini tekshirish
+      const promoSnapshot = await window.get(window.child(window.dbRef, `promocodes/${promoCode}`));
+      if (!promoSnapshot.exists()) {
+        alert("Bunday promokod mavjud emas!");
+        return;
+      }
+
+      const promoData = promoSnapshot.val();
+      const now = Date.now();
+
+      if (promoData.expiresAt && now > promoData.expiresAt) {
+        alert("Kechirasiz, bu promokodning amal qilish muddati tugagan! ⌛");
+        return;
+      }
+
+      const currentStars = currentUser.stars || 0;
+      const addedStars = promoData.stars;
+
+      if (!currentUser.redeemedPromos) {
+        currentUser.redeemedPromos = {};
+      }
+      currentUser.redeemedPromos[promoCode] = true;
+
+      // Bazaga yozish (shu jumladan redeemedPromos ni yangilash)
+      await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
+        stars: currentStars + addedStars,
+        redeemedPromos: currentUser.redeemedPromos
+      });
+
+      document.getElementById('mainPromoInput').value = "";
+      closePromoModal();
+      alert(`Tabriklaymiz! Promokod muvaffaqiyatli ishlatildi. Balansingizga +${addedStars} Stars qo'shildi! 🎉`);
+      updateUserSubscription();
+    } catch (e) {
+      alert("Xatolik yuz berdi: " + e.message);
+    }
+  }
+
+  function redeemMainPromoCode() {
+    const code = document.getElementById('mainPromoInput').value.trim();
+    processPromoActivation(code);
+  }
+
   async function spinWheel() {
     const now = Date.now();
     let lastBatchTime = currentUser.lastSpinBatchTime || 0;
@@ -532,6 +637,88 @@
   async function renderAdminData() {
     renderRequestsList();
     renderUsersList();
+    renderAdminPromos();
+  }
+
+  async function createNewPromoCode() {
+    const rawCode = document.getElementById('adminPromoCode').value.trim();
+    const starsVal = parseInt(document.getElementById('adminPromoStars').value);
+    const expireInput = document.getElementById('adminPromoExpire').value;
+
+    if (!rawCode || isNaN(starsVal) || !expireInput) {
+      alert("Barcha maydonlarni va tugash vaqtini to'g'ri to'ldiring!");
+      return;
+    }
+
+    const promoCode = rawCode.toLowerCase();
+    const expireTimestamp = new Date(expireInput).getTime();
+
+    try {
+      await window.set(window.child(window.dbRef, `promocodes/${promoCode}`), {
+        code: promoCode,
+        stars: starsVal,
+        expiresAt: expireTimestamp
+      });
+
+      document.getElementById('adminPromoCode').value = "";
+      document.getElementById('adminPromoExpire').value = "";
+      alert(`"${promoCode}" promokodi yaratildi! (${starsVal} Stars)`);
+      renderAdminPromos();
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
+  }
+
+  async function renderAdminPromos() {
+    try {
+      const snapshot = await window.get(window.child(window.dbRef, `promocodes`));
+      const container = document.getElementById('promoListContainer');
+      container.innerHTML = "";
+
+      if (!snapshot.exists()) {
+        container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Faol promokodlar yo'q</p>";
+        return;
+      }
+
+      const promos = snapshot.val();
+      const now = Date.now();
+
+      Object.keys(promos).forEach(codeKey => {
+        const promo = promos[codeKey];
+        const isExpired = promo.expiresAt && now > promo.expiresAt;
+        const expireDateStr = promo.expiresAt ? new Date(promo.expiresAt).toLocaleString() : 'Cheksiz';
+
+        const item = document.createElement('div');
+        item.className = 'user-item';
+        item.style.borderColor = isExpired ? '#ef4444' : '#1e293b';
+        item.innerHTML = `
+          <div class="user-item-header">
+            <span style="color: #38bdf8; text-transform: uppercase;">🎁 ${promo.code}</span>
+            <span style="color: #facc15;">+${promo.stars} Stars</span>
+          </div>
+          <div style="font-size: 0.75rem; color: ${isExpired ? '#f87171' : '#94a3b8'}; margin-bottom: 4px;">
+            Tugash vaqti: ${expireDateStr} ${isExpired ? '(Muddati tugagan ❌)' : ''}
+          </div>
+          <div class="user-actions">
+            <button class="btn-small btn-danger" onclick="deletePromoCode('${promo.code}')">O'chirish 🗑️</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  async function deletePromoCode(code) {
+    if (!confirm(`Haqiqatan ham "${code}" promokodini o'chirmoqchimisiz?`)) return;
+    try {
+      await window.remove(window.child(window.dbRef, `promocodes/${code}`));
+      alert("Promokod o'chirildi!");
+      renderAdminPromos();
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
   }
 
   async function renderRequestsList() {
@@ -717,15 +904,12 @@
     renderAdminData();
   }
 
-  // --- GANN PRO / SNIPER HISOBLASH LOGIKASI ---
   function calculateSniper() {
     const dir = document.getElementById('direction').value;
     const p = parseFloat(document.getElementById('pPrice').value) || 0;
     const day = parseFloat(document.getElementById('dayNum').value) || 0;
 
-    // Sana bo'yicha point hisoblash logikasi (Sizning ikkinchi kodingizdagi formula)
     const offset = (day * 10) / 100;
-
     let entryPrice = dir === 'BUY' ? (p + offset) : (p - offset);
 
     let tp1 = dir === 'BUY' ? entryPrice + 17.07 : entryPrice - 17.07;
