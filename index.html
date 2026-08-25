@@ -77,7 +77,7 @@
 
     .sniper-result-box { background: rgba(34, 197, 94, 0.05); border: 1px solid #22c55e; padding: 12px; border-radius: 8px; text-align: center; margin-top: 14px; margin-bottom: 10px; }
     .sniper-title { font-size: 0.85rem; font-weight: bold; color: #fff; display: flex; justify-content: center; align-items: center; gap: 5px; }
-    .sniper-price { font-size: 1.5rem; font-weight: bold; color: #4ade80; margin-top: 2px; }
+    .sniper-price { font-size: 1.1rem; font-weight: bold; color: #4ade80; margin-top: 4px; text-align: left; background: #0b0f19; padding: 8px; border-radius: 6px; border: 1px solid #1e293b; line-height: 1.5; }
 
     .tp-table { width: 100%; border-collapse: collapse; margin-top: 8px; background: #0b0f19; border-radius: 6px; overflow: hidden; font-size: 0.82rem; }
     .tp-table th { background: #d97706; color: #fff; padding: 7px; text-align: center; font-size: 0.8rem; }
@@ -220,8 +220,11 @@
       <!-- NATIJALAR -->
       <div id="results" style="display: none;">
         <div class="sniper-result-box">
-          <div class="sniper-title" id="entryTitle">🎯 SNIPER BUY ZONA (KIRISH)</div>
-          <div class="sniper-price" id="entryPrice">$4656.40</div>
+          <div class="sniper-title" id="entryTitle">🎯 SNIPER BUY ZONALAR (KIRISH)</div>
+          <div class="sniper-price" id="entryPrice">
+            1-Entry: $4656.40<br>
+            2-Entry: $4657.90
+          </div>
         </div>
 
         <table class="tp-table">
@@ -510,13 +513,11 @@
     const promoCode = rawCode.toLowerCase();
 
     try {
-      // 1. Foydalanuvchi bu promokodni oldin ishlatganligini tekshirish
       if (currentUser.redeemedPromos && currentUser.redeemedPromos[promoCode]) {
         alert("Siz bu promokodni oldin ishlatgansiz! Uni qayta ishlatib bo'lmaydi.");
         return;
       }
 
-      // 2. Promokod bazada mavjudligini va muddatini tekshirish
       const promoSnapshot = await window.get(window.child(window.dbRef, `promocodes/${promoCode}`));
       if (!promoSnapshot.exists()) {
         alert("Bunday promokod mavjud emas!");
@@ -539,7 +540,6 @@
       }
       currentUser.redeemedPromos[promoCode] = true;
 
-      // Bazaga yozish (shu jumladan redeemedPromos ni yangilash)
       await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
         stars: currentStars + addedStars,
         redeemedPromos: currentUser.redeemedPromos
@@ -635,9 +635,9 @@
   }
 
   async function renderAdminData() {
+    renderAdminPromos();
     renderRequestsList();
     renderUsersList();
-    renderAdminPromos();
   }
 
   async function createNewPromoCode() {
@@ -706,7 +706,7 @@
         container.appendChild(item);
       });
     } catch (e) {
-      console.log(e.message);
+      document.getElementById('promoListContainer').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Ma'lumotni o'qishda xatolik</p>";
     }
   }
 
@@ -764,7 +764,7 @@
         container.appendChild(item);
       });
     } catch (e) {
-      console.log(e.message);
+      document.getElementById('requestsList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Ma'lumotni o'qishda xatolik</p>";
     }
   }
 
@@ -852,7 +852,7 @@
         container.appendChild(item);
       });
     } catch (e) {
-      console.log(e.message);
+      document.getElementById('usersList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Ma'lumotni o'qishda xatolik</p>";
     }
   }
 
@@ -910,18 +910,26 @@
     const day = parseFloat(document.getElementById('dayNum').value) || 0;
 
     const offset = (day * 10) / 100;
-    let entryPrice = dir === 'BUY' ? (p + offset) : (p - offset);
+    let entryPrice1 = dir === 'BUY' ? (p + offset) : (p - offset);
 
-    let tp1 = dir === 'BUY' ? entryPrice + 17.07 : entryPrice - 17.07;
-    let tp2 = dir === 'BUY' ? entryPrice + 34.17 : entryPrice - 34.17;
-    let tp3 = dir === 'BUY' ? entryPrice + 51.31 : entryPrice - 51.31;
-    let tp4 = dir === 'BUY' ? entryPrice + 68.47 : entryPrice - 68.47;
+    const pips15Offset = 1.50;  
+    let entryPrice2 = dir === 'BUY' ? (entryPrice1 + pips15Offset) : (entryPrice1 - pips15Offset);
 
-    document.getElementById('entryTitle').innerText = dir === 'BUY' ? "🎯 SNIPER BUY ZONA (KIRISH)" : "🎯 SNIPER SELL ZONA (KIRISH)";
-    document.getElementById('entryPrice').innerText = `$${entryPrice.toFixed(2)}`;
-    document.getElementById('entryPrice').className = dir === 'BUY' ? "sniper-price val-green" : "sniper-price val-red";
+    let tp1 = dir === 'BUY' ? entryPrice1 + 17.07 : entryPrice1 - 17.07;
+    let tp2 = dir === 'BUY' ? entryPrice1 + 34.17 : entryPrice1 - 34.17;
+    let tp3 = dir === 'BUY' ? entryPrice1 + 51.31 : entryPrice1 - 51.31;
+    let tp4 = dir === 'BUY' ? entryPrice1 + 68.47 : entryPrice1 - 68.47;
 
+    document.getElementById('entryTitle').innerText = dir === 'BUY' ? "🎯 SNIPER BUY ZONALAR (KIRISH)" : "🎯 SNIPER SELL ZONALAR (KIRISH)";
+    
     const colorClass = dir === 'BUY' ? 'val-green' : 'val-red';
+    
+    document.getElementById('entryPrice').innerHTML = `
+      1-Entry: $${entryPrice1.toFixed(2)}<br>
+      2-Entry: <span class="${colorClass}">$${entryPrice2.toFixed(2)}</span>
+    `;
+    document.getElementById('entryPrice').className = `sniper-price ${colorClass}`;
+
     document.getElementById('tpTableBody').innerHTML = `
       <tr>
         <td><strong>TP 1</strong></td>
