@@ -423,10 +423,10 @@
       <button class="btn-small btn-danger" onclick="logout()">Chiqish</button>
     </div>
 
-    <h3>🎡 Baraban Vaqtini Sozlash (Hamma uchun)</h3>
+    <h3>🎡 Umumiy Baraban Vaqtini Sozlash</h3>
     <div class="box" style="margin-bottom: 15px;">
       <div class="input-group">
-        <label>Kutish vaqti (soatda):</label>
+        <label>Barcha uchun standart kutish vaqti (soatda):</label>
         <input type="number" id="adminWheelCooldownInput" placeholder="Masalan: 12 yoki 24">
       </div>
       <button class="btn-small btn-success" style="width: 100%; margin-top: 6px;" onclick="updateGlobalWheelCooldown()">Vaqtni Saqlash ⚙️</button>
@@ -464,6 +464,7 @@
   let timerInterval = null;
   let currentWheelRotation = 0;
   let previousRequestsCount = 0;
+  let globalWheelCooldownHours = 12;
 
   function showCard(cardId) {
     document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -523,6 +524,7 @@
         lastSpinBatchTime: 0,
         spinsUsed: 0,
         totalSpins: 0,
+        customCooldownHours: null, // Foydalanuvchining shaxsiy baraban interval soati
         redeemedPromos: {}
       };
 
@@ -567,21 +569,23 @@
     showCard('loginCard');
   }
 
-  // USER PANELINI YUKLASH VA REAL-TIME SO'ROV VA LOKAL TAYMERNI ISHGA TUSHIRISH
+  // USER PANELINI YUKLASH VA TAYMERNI ISHGA TUSHIRISH
   async function loadUserPanel() {
     showCard('calcCard');
     document.getElementById('displayUsername').innerText = currentUser.name || currentUser.username;
     
-    // 1-marta bazadan yangilaymiz
+    try {
+      const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
+      if (cooldownSnap.exists()) globalWheelCooldownHours = Number(cooldownSnap.val());
+    } catch(e){}
+
     await fetchFreshUserData();
 
-    // Lokal taymerni yoqamiz (Har sekundda silliq orqaga hisoblaydi)
     if (timerInterval) clearInterval(timerInterval);
     updateTimerDisplay(); 
     timerInterval = setInterval(updateTimerDisplay, 1000);
   }
 
-  // BAZADAN VAQT VA STARSLARNI YANGILAB OLISH
   async function fetchFreshUserData() {
     if (!currentUser || !currentUser.username) return;
     try {
@@ -591,41 +595,34 @@
         localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
         document.getElementById('walletStars').innerText = `⭐ ${currentUser.stars || 0} Stars`;
       }
-    } catch (e) {
-      console.log("DB update error:", e);
-    }
+    } catch (e) { console.log("DB update error:", e); }
   }
 
-  // HAR SEKUNDDA QOTMASDAN VAQTNI KO'RSATUVCHI ANIQ TAYMER
-  async function updateTimerDisplay() {
+  // TAYMER HISOBI (FOYDALANUVCHINING SHAXSIY SOATIGA MOSLASHGAN)
+  function updateTimerDisplay() {
     if (!currentUser) return;
 
     const now = Date.now();
     let subUntil = Number(currentUser.subUntil || 0);
 
-    // Agar sekundda bo'lsa millisekundga o'tkazish
-    if (subUntil > 0 && subUntil < 10000000000) {
-      subUntil = subUntil * 1000;
-    }
+    if (subUntil > 0 && subUntil < 10000000000) { subUntil = subUntil * 1000; }
 
     const badge = document.getElementById('subStatusBadge');
     const timeLeft = document.getElementById('subTimeLeft');
     const calcContentContainer = document.getElementById('calcContentContainer');
     const blockedMsg = document.getElementById('blockedMessage');
 
-    // BARABAN VAQTI TAYMERI
-    let globalCooldownHours = 12;
-    try {
-      const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
-      if (cooldownSnap.exists()) globalCooldownHours = Number(cooldownSnap.val());
-    } catch(e){}
+    // USER UCHUN MAXSUS SOAT YOKI UMUMIY STANDART SOAT
+    const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
+      ? Number(currentUser.customCooldownHours)
+      : globalWheelCooldownHours;
 
     const lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
     let spinsUsed = Number(currentUser.spinsUsed || 0);
-    const cooldownMs = globalCooldownHours * 60 * 60 * 1000;
+    const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
     if (now - lastBatchTime >= cooldownMs) { spinsUsed = 0; }
-    const remainingSpins = 3 - spinsUsed;
+    const remainingSpins = Math.max(0, 3 - spinsUsed);
     const spinBtn = document.getElementById('spinBtn');
 
     if (spinBtn) {
@@ -634,15 +631,24 @@
         spinBtn.disabled = false;
       } else {
         const waitDiff = cooldownMs - (now - lastBatchTime);
-        const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
-        const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
-        const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
-        document.getElementById('wheelSpinsText').innerText = `Qayta aylantirish: ${wHours}s ${wMins}m ${wSecs}s dan keyin`;
-        spinBtn.disabled = true;
+        if (waitDiff <= 0) {
+          currentUser.spinsUsed = 0;
+          document.getElementById('wheelSpinsText').innerText = `Imkoniyat: 3 / 3 marta`;
+          spinBtn.disabled = false;
+        } else {
+          const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
+          const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
+          const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
+          const hStr = String(wHours).padStart(2, '0');
+          const mStr = String(wMins).padStart(2, '0');
+          const sStr = String(wSecs).padStart(2, '0');
+          document.getElementById('wheelSpinsText').innerText = `Qayta aylantirish: ${hStr}:${mStr}:${sStr} dan keyin`;
+          spinBtn.disabled = true;
+        }
       }
     }
 
-    // PREMIUM MUDDATINI ANIQ FORMATLAB HAR SEKUNDDA TIK-TAK KO'RSATISH
+    // PREMIUM MUDDATINI KO'RSATISH
     if (subUntil && subUntil > now) {
       const diff = subUntil - now;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -710,9 +716,7 @@
       alert(`Tabriklaymiz! Balansingizga +${addedStars} Stars qo'shildi! 🎉`);
       await fetchFreshUserData();
       updateTimerDisplay();
-    } catch (e) {
-      alert("Xatolik yuz berdi: " + e.message);
-    }
+    } catch (e) { alert("Xatolik yuz berdi: " + e.message); }
   }
 
   function redeemMainPromoCode() {
@@ -722,13 +726,14 @@
 
   async function spinWheel() {
     const now = Date.now();
-    let globalCooldownHours = 12;
-    const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
-    if (cooldownSnap.exists()) globalCooldownHours = Number(cooldownSnap.val());
+
+    const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
+      ? Number(currentUser.customCooldownHours)
+      : globalWheelCooldownHours;
 
     let lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
     let spinsUsed = Number(currentUser.spinsUsed || 0);
-    const cooldownMs = globalCooldownHours * 60 * 60 * 1000;
+    const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
     if (now - lastBatchTime >= cooldownMs) {
       spinsUsed = 0;
@@ -736,7 +741,7 @@
     }
 
     if (spinsUsed >= 3) {
-      alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${globalCooldownHours} soatdan keyin qayta urinib ko'ring.`);
+      alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${userCooldownHours} soatdan keyin qayta urinib ko'ring.`);
       return;
     }
 
@@ -788,9 +793,7 @@
       showCard('calcCard');
       await fetchFreshUserData();
       updateTimerDisplay();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
   function calculateSniper() {
@@ -855,7 +858,8 @@
     try {
       const snap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
       if (snap.exists()) {
-        document.getElementById('adminWheelCooldownInput').value = snap.val();
+        globalWheelCooldownHours = Number(snap.val());
+        document.getElementById('adminWheelCooldownInput').value = globalWheelCooldownHours;
       } else {
         document.getElementById('adminWheelCooldownInput').value = 12;
       }
@@ -871,10 +875,9 @@
 
     try {
       await window.set(window.child(window.dbRef, 'settings/wheelCooldownHours'), hours);
-      alert(`Barcha foydalanuvchilar uchun baraban kutish vaqti ${hours} soatga o'zgartirildi!`);
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+      globalWheelCooldownHours = hours;
+      alert(`Barcha uchun standart baraban kutish vaqti ${hours} soatga o'zgartirildi!`);
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
   async function renderAdminData() {
@@ -1034,6 +1037,7 @@
     } catch (e) { alert(e.message); }
   }
 
+  // FOYDALANUVCHILARNI CHIQARISH VA HAR BIR USERGA ALOHIDA BARABAN VAQTINI VA TAYMERINI SOZLASH
   async function renderUsersList() {
     try {
       const snapshot = await window.get(window.child(window.dbRef, `users`));
@@ -1065,6 +1069,23 @@
           }
         }
 
+        // Foydalanuvchining shaxsiy baraban interval soati
+        const userCooldownHours = (u.customCooldownHours !== undefined && u.customCooldownHours !== null) 
+          ? Number(u.customCooldownHours) 
+          : globalWheelCooldownHours;
+
+        const userLastSpinBatch = Number(u.lastSpinBatchTime || 0);
+        const userSpinsUsed = Number(u.spinsUsed || 0);
+        const cooldownMs = userCooldownHours * 60 * 60 * 1000;
+        const isWheelLocked = (userSpinsUsed >= 3) && (now - userLastSpinBatch < cooldownMs);
+
+        let wheelStatusStr = "✅ Tayyor";
+        if (isWheelLocked) {
+          const diffMs = cooldownMs - (now - userLastSpinBatch);
+          const remainH = (diffMs / (1000 * 60 * 60)).toFixed(1);
+          wheelStatusStr = `🔒 ${remainH} soat qoldi`;
+        }
+
         const item = document.createElement('div');
         item.className = 'user-item';
         item.innerHTML = `
@@ -1073,14 +1094,16 @@
             <span style="color: ${hasSub ? '#4ade80' : '#f87171'};">${subText}</span>
           </div>
           <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;">
-            Balans: ⭐ ${u.stars || 0} Stars | Parol: ${u.password || '***'}
+            Balans: ⭐ ${u.stars || 0} Stars | Baraban: <b>${wheelStatusStr}</b> <span style="color:#38bdf8;">(Interval: ${userCooldownHours}h)</span>
           </div>
           <div class="user-actions">
+            <button class="btn-small btn-warning" onclick="setUserWheelInterval('${username}')">⏱️ Baraban Soati</button>
+            <button class="btn-small btn-main" onclick="setUserWheelDelay('${username}')">⏳ Kutish Soati</button>
             <button class="btn-small btn-success" onclick="grantSubDaysCustom('${username}')">+Kun Premium</button>
             <button class="btn-small btn-warning" onclick="grantSubHours('${username}')">+Soat Premium</button>
             <button class="btn-small btn-main" onclick="grantStars('${username}')">+Stars ⭐</button>
             <button class="btn-small btn-danger" onclick="revokeSub('${username}')">Premiumni o'chirish ❌</button>
-            <button class="btn-small btn-danger" style="background: rgba(185, 28, 28, 0.8);" onclick="deleteUser('${username}')">Userni O'chirish 🗑️</button>
+            <button class="btn-small btn-danger" style="background: rgba(185, 28, 28, 0.8);" onclick="deleteUser('${username}')">O'chirish 🗑️</button>
           </div>
         `;
         container.appendChild(item);
@@ -1088,6 +1111,66 @@
     } catch (e) {
       document.getElementById('usersList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik berdi</p>";
     }
+  }
+
+  // 1. FOYDALANUVCHINING ALOHIDA BARABAN INTERVALINI BELGILASH (MASALAN: HAR 6 SOATDA YOKI 24 SOATDA)
+  async function setUserWheelInterval(username) {
+    const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+    const currentCustom = snap.exists() && snap.val().customCooldownHours !== undefined ? snap.val().customCooldownHours : globalWheelCooldownHours;
+
+    const inputHours = prompt(`@${username} uchun baraban har necha SOATDA qayta ochilsin?\n(Standart: ${globalWheelCooldownHours} soat)`, currentCustom);
+    if (inputHours === null) return;
+
+    const hours = parseFloat(inputHours);
+    if (isNaN(hours) || hours < 0) return alert("Iltimos, to'g'ri soat miqdorini kiriting!");
+
+    try {
+      await window.update(window.child(window.dbRef, `users/${username}`), {
+        customCooldownHours: hours
+      });
+      alert(`@${username} uchun baraban intervali ${hours} soatga o'zgartirildi!`);
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
+  }
+
+  // 2. FOYDALANUVCHINING HOZIRGI KUTISH TAYMERINI ISTALGAN SOATGA SURISH (MASALAN: HOZIRDAN BOSHLAB 3.5 SOATDAN KEYIN OCHILSIN)
+  async function setUserWheelDelay(username) {
+    const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+    if (!snap.exists()) return;
+    const userData = snap.val();
+
+    const userCooldownHours = (userData.customCooldownHours !== undefined && userData.customCooldownHours !== null) 
+      ? Number(userData.customCooldownHours) 
+      : globalWheelCooldownHours;
+
+    const inputHours = prompt(`@${username} hozirdan boshlab necha SOATDAN KEYIN barabanylantira olsin?\n(0 kiritsangiz darhol ochiladi, masalan: 2, 3.5, 5.2)`,"0");
+    if (inputHours === null) return;
+
+    const hoursNeeded = parseFloat(inputHours);
+    if (isNaN(hoursNeeded) || hoursNeeded < 0) return alert("Iltimos, to'g'ri soat kiriting!");
+
+    try {
+      const now = Date.now();
+      const cooldownMs = userCooldownHours * 60 * 60 * 1000;
+
+      if (hoursNeeded === 0) {
+        // Darhol tiklash
+        await window.update(window.child(window.dbRef, `users/${username}`), {
+          spinsUsed: 0,
+          lastSpinBatchTime: 0
+        });
+        alert(`@${username} uchun baraban darhol ochildi!`);
+      } else {
+        // Aynan kiritilgan soatdan keyin ochiladigan qilib batch vaqtini orqaga surish
+        const newBatchTime = now - (cooldownMs - (hoursNeeded * 60 * 60 * 1000));
+        await window.update(window.child(window.dbRef, `users/${username}`), {
+          spinsUsed: 3,
+          lastSpinBatchTime: newBatchTime
+        });
+        alert(`@${username} uchun kutish vaqti hozirdan boshlab ${hoursNeeded} soatga belgilandi!`);
+      }
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
   async function grantSubHours(username) {
