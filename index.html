@@ -184,6 +184,14 @@
 
     .wheel-container { position: relative; width: 170px; height: 170px; margin: 15px auto; border-radius: 50%; border: 4px solid rgba(245, 158, 11, 0.8); overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1); background: conic-gradient(#0284c7 0 60deg, #22c55e 60deg 120deg, #ef4444 120deg 180deg, #f59e0b 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); }
     .wheel-pointer { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 16px solid #fff; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+    .dir-toggle-container { display: flex; gap: 8px; margin-bottom: 12px; }
+    .dir-toggle-btn { flex: 1; padding: 10px; font-size: 0.85rem; font-weight: 800; border-radius: 12px; margin: 0; text-align: center; }
+    .dir-toggle-btn.sell { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+    .dir-toggle-btn.sell.active { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+    .dir-toggle-btn.buy { background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); color: #4ade80; }
+    .dir-toggle-btn.buy.active { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; }
+    .sub-title { font-size: 0.9rem; font-weight: bold; color: #38bdf8; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 6px; }
   </style>
 </head>
 <body>
@@ -264,9 +272,10 @@
     </div>
 
     <!-- TAB MENU -->
-    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-      <button class="compact-btn btn-main" style="margin:0;" onclick="switchTab(1)" id="tab1">🎯 Gann Pro</button>
-      <button class="compact-btn btn-secondary" style="margin:0;" onclick="switchTab(2)" id="tab2">📉 Atkat (Fib)</button>
+    <div style="display: flex; gap: 6px; margin-bottom: 15px;">
+      <button class="compact-btn btn-main" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(1)" id="tab1">🎯 Gann Pro</button>
+      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(2)" id="tab2">📉 Atkat (Fib)</button>
+      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(3)" id="tab3">🥇 Gold Zone</button>
     </div>
 
     <div id="blockedMessage" class="blocked-msg" style="display: none;">
@@ -301,11 +310,7 @@
         </div>
         <div class="input-group">
           <label>Ekstremum Soat / Vaqti (HH:MM):</label>
-          <select id="timeSelect">
-            <option value="15:45">15:45</option>
-            <option value="16:00">16:00</option>
-            <option value="16:15">16:15</option>
-          </select>
+          <input type="time" id="timeInput" value="01:15">
         </div>
         <button class="btn-sniper" onclick="calculateSniper()">Sniper Algoritm Hisoblash ⚡</button>
 
@@ -352,6 +357,59 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- 3-KALKULYATOR: GOLD ZONE ENGINE & RAZVAROT -->
+      <div id="calcContent3" style="display: none;">
+        
+        <!-- BLOCK 1: Gold Zone Engine -->
+        <div class="box">
+          <div class="sub-title">1. Gold Zone Engine (XAUUSD)</div>
+          
+          <div class="dir-toggle-container">
+            <button id="goldSellBtn" class="dir-toggle-btn sell active" onclick="setGoldDirection('SELL')">SELL</button>
+            <button id="goldBuyBtn" class="dir-toggle-btn buy" onclick="setGoldDirection('BUY')">BUY</button>
+          </div>
+
+          <div class="input-group">
+            <label>MAKSIMUM NARX (MAX):</label>
+            <input type="number" step="0.01" id="goldMax" placeholder="4172.73" value="4172.73">
+          </div>
+
+          <div class="input-group">
+            <label>MINIMUM NARX (MIN):</label>
+            <input type="number" step="0.01" id="goldMin" placeholder="4162.43" value="4162.43">
+          </div>
+
+          <button class="compact-btn btn-main" style="width:100%; font-size:0.9rem;" onclick="calculateGoldZones()">Zonalarni Hisoblash ⚡</button>
+
+          <div id="goldResultBox" style="display: none; margin-top: 12px;">
+            <div class="sniper-result-box" style="background: rgba(14, 165, 233, 0.12); border-color: rgba(56, 189, 248, 0.35);">
+              <div class="sniper-title" style="color:#38bdf8;">🥇 HISOBLANGAN ZONALAR</div>
+              <div class="sniper-price" id="goldResultDisplay" style="color:#7dd3fc; font-size:0.95rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOCK 2: Razvarot Vaqti -->
+        <div class="box" style="margin-bottom: 0;">
+          <div class="sub-title">2. Razvarot Vaqti</div>
+          
+          <div class="input-group">
+            <label>Ekstremum / Razvarot Vaqti (HH:MM):</label>
+            <input type="time" id="razvarotTimeInput" value="01:15">
+          </div>
+
+          <button class="compact-btn btn-main" style="width:100%; font-size:0.9rem;" onclick="calculateRazvarotTime()">Vaqtni Hisoblash ⏱️</button>
+
+          <div id="razvarotResultBox" style="display: none; margin-top: 12px;">
+            <div class="sniper-result-box" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.35);">
+              <div class="sniper-title" style="color:#facc15;">⏱️ TAXMINIY RAZVAROT VAQTLARI</div>
+              <div class="sniper-price" id="razvarotResultDisplay" style="color:#fde047; font-size:0.9rem; line-height:1.5;"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -465,6 +523,7 @@
   let currentWheelRotation = 0;
   let previousRequestsCount = 0;
   let globalWheelCooldownHours = 12;
+  let selectedGoldDirection = 'SELL';
 
   function showCard(cardId) {
     document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -472,17 +531,16 @@
   }
 
   function switchTab(tabNum) {
-    if(tabNum === 1) {
-      document.getElementById('calcContent1').style.display = 'block';
-      document.getElementById('calcContent2').style.display = 'none';
-      document.getElementById('tab1').className = 'compact-btn btn-main';
-      document.getElementById('tab2').className = 'compact-btn btn-secondary';
-    } else {
-      document.getElementById('calcContent1').style.display = 'none';
-      document.getElementById('calcContent2').style.display = 'block';
-      document.getElementById('tab1').className = 'compact-btn btn-secondary';
-      document.getElementById('tab2').className = 'compact-btn btn-main';
-    }
+    document.getElementById('calcContent1').style.display = 'none';
+    document.getElementById('calcContent2').style.display = 'none';
+    document.getElementById('calcContent3').style.display = 'none';
+
+    document.getElementById('tab1').className = 'compact-btn btn-secondary';
+    document.getElementById('tab2').className = 'compact-btn btn-secondary';
+    document.getElementById('tab3').className = 'compact-btn btn-secondary';
+
+    document.getElementById(`calcContent${tabNum}`).style.display = 'block';
+    document.getElementById(`tab${tabNum}`).className = 'compact-btn btn-main';
   }
 
   function openPromoModal() { document.getElementById('promoModalBox').style.display = 'block'; }
@@ -524,7 +582,7 @@
         lastSpinBatchTime: 0,
         spinsUsed: 0,
         totalSpins: 0,
-        customCooldownHours: null, // Foydalanuvchining shaxsiy baraban interval soati
+        customCooldownHours: null,
         redeemedPromos: {}
       };
 
@@ -569,7 +627,6 @@
     showCard('loginCard');
   }
 
-  // USER PANELINI YUKLASH VA TAYMERNI ISHGA TUSHIRISH
   async function loadUserPanel() {
     showCard('calcCard');
     document.getElementById('displayUsername').innerText = currentUser.name || currentUser.username;
@@ -598,7 +655,6 @@
     } catch (e) { console.log("DB update error:", e); }
   }
 
-  // TAYMER HISOBI (FOYDALANUVCHINING SHAXSIY SOATIGA MOSLASHGAN)
   function updateTimerDisplay() {
     if (!currentUser) return;
 
@@ -612,7 +668,6 @@
     const calcContentContainer = document.getElementById('calcContentContainer');
     const blockedMsg = document.getElementById('blockedMessage');
 
-    // USER UCHUN MAXSUS SOAT YOKI UMUMIY STANDART SOAT
     const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
       ? Number(currentUser.customCooldownHours)
       : globalWheelCooldownHours;
@@ -648,7 +703,6 @@
       }
     }
 
-    // PREMIUM MUDDATINI KO'RSATISH
     if (subUntil && subUntil > now) {
       const diff = subUntil - now;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -796,22 +850,54 @@
     } catch (e) { alert("Xato: " + e.message); }
   }
 
+  function addTimeStep(timeStr, multiplier = 1) {
+    if (!timeStr) return "00:00";
+    let parts = timeStr.split(":");
+    let hours = parseInt(parts[0], 10) || 0;
+    let minutes = parseInt(parts[1], 10) || 0;
+
+    let tens = Math.floor(minutes / 10);
+    let units = minutes % 10;
+    let sumDigits = tens + units;
+    
+    let totalAdd = (sumDigits === 0 ? 5 : sumDigits) * multiplier;
+    let newMinutes = minutes + totalAdd;
+    
+    hours = (hours + Math.floor(newMinutes / 60)) % 24;
+    newMinutes = newMinutes % 60;
+
+    let hStr = String(hours).padStart(2, '0');
+    let mStr = String(newMinutes).padStart(2, '0');
+
+    return `${hStr}:${mStr}`;
+  }
+
   function calculateSniper() {
     const p = parseFloat(document.getElementById('pPrice').value);
     const dir = document.getElementById('direction').value;
-    if(isNaN(p)) return;
+    const timeVal = document.getElementById('timeInput').value;
+
+    if (isNaN(p)) {
+      alert("Iltimos, narxni to'g'ri kiriting!");
+      return;
+    }
 
     let e1, e2;
-    if(dir === 'BUY') {
+    if (dir === 'BUY') {
         e1 = p * 1.0005; e2 = p * 0.9995;
     } else {
         e1 = p * 0.9995; e2 = p * 1.0005;
     }
 
+    const tp1Time = addTimeStep(timeVal, 1);
+    const tp2Time = addTimeStep(timeVal, 2);
+
+    document.getElementById('entryTitle').innerText = dir === 'BUY' ? '🎯 SNIPER BUY ZONALAR (KIRISH)' : '🎯 SNIPER SELL ZONALAR (KIRISH)';
     document.getElementById('entryPrice').innerHTML = `1-Entry: $${e1.toFixed(3)}<br>2-Entry: $${e2.toFixed(3)}`;
+    
     document.getElementById('tpTableBody').innerHTML = `
-      <tr><td>TP 1 (15m)</td><td class="val-green">$${(p * (dir==='BUY'?1.002:0.998)).toFixed(3)}</td><td>15m</td></tr>
-      <tr><td>TP 2 (1H)</td><td class="val-green">$${(p * (dir==='BUY'?1.005:0.995)).toFixed(3)}</td><td>1h</td></tr>
+      <tr><td>TP 1 (Intraday)</td><td class="val-green">$${(p * (dir === 'BUY' ? 1.002 : 0.998)).toFixed(3)}</td><td>${tp1Time}</td></tr>
+      <tr><td>TP 2 (Swing)</td><td class="val-green">$${(p * (dir === 'BUY' ? 1.005 : 0.995)).toFixed(3)}</td><td>${tp2Time}</td></tr>
     `;
     document.getElementById('results').style.display = 'block';
   }
@@ -844,7 +930,64 @@
     document.getElementById('atkatResults').style.display = 'block';
   }
 
-  /* ---------------- ADMIN PANEL FUNKSIYALARI ---------------- */
+  function setGoldDirection(dir) {
+    selectedGoldDirection = dir;
+    if (dir === 'SELL') {
+      document.getElementById('goldSellBtn').classList.add('active');
+      document.getElementById('goldBuyBtn').classList.remove('active');
+    } else {
+      document.getElementById('goldBuyBtn').classList.add('active');
+      document.getElementById('goldSellBtn').classList.remove('active');
+    }
+  }
+
+  function calculateGoldZones() {
+    const maxVal = parseFloat(document.getElementById('goldMax').value);
+    const minVal = parseFloat(document.getElementById('goldMin').value);
+
+    if (isNaN(maxVal) || isNaN(minVal) || maxVal <= minVal) {
+      alert("Iltimos, Max va Min narxlarni to'g'ri kiriting!");
+      return;
+    }
+
+    const diff = maxVal - minVal;
+    let z1, z2, target;
+
+    if (selectedGoldDirection === 'SELL') {
+      z1 = minVal + (diff * 0.618);
+      z2 = minVal + (diff * 0.786);
+      target = minVal - (diff * 0.27);
+    } else {
+      z1 = maxVal - (diff * 0.618);
+      z2 = maxVal - (diff * 0.786);
+      target = maxVal + (diff * 0.27);
+    }
+
+    /* 61.8% va 78.6% yozuvlari olib tashlandi */
+    document.getElementById('goldResultDisplay').innerHTML = `
+      Yo'nalish: <b>${selectedGoldDirection}</b><br>
+      1-ZONA: <b>$${z1.toFixed(2)}</b><br>
+      2-ZONA: <b>$${z2.toFixed(2)}</b><br>
+      Target (TP): <b>$${target.toFixed(2)}</b>
+    `;
+    document.getElementById('goldResultBox').style.display = 'block';
+  }
+
+  function calculateRazvarotTime() {
+    const timeVal = document.getElementById('razvarotTimeInput').value;
+    if (!timeVal) {
+      alert("Iltimos, vaqtni kiriting!");
+      return;
+    }
+
+    const time1 = addTimeStep(timeVal, 1);
+    const time2 = addTimeStep(timeVal, 2);
+
+    const timeText = `1-Oyna: ${time1} (Toshkent v.)<br>2-Oyna: ${time2} (Toshkent v.)`;
+
+    document.getElementById('razvarotResultDisplay').innerHTML = timeText;
+    document.getElementById('razvarotResultBox').style.display = 'block';
+  }
 
   function loadAdminPanel() {
     showCard('adminCard');
@@ -1037,7 +1180,6 @@
     } catch (e) { alert(e.message); }
   }
 
-  // FOYDALANUVCHILARNI CHIQARISH VA HAR BIR USERGA ALOHIDA BARABAN VAQTINI VA TAYMERINI SOZLASH
   async function renderUsersList() {
     try {
       const snapshot = await window.get(window.child(window.dbRef, `users`));
@@ -1069,7 +1211,6 @@
           }
         }
 
-        // Foydalanuvchining shaxsiy baraban interval soati
         const userCooldownHours = (u.customCooldownHours !== undefined && u.customCooldownHours !== null) 
           ? Number(u.customCooldownHours) 
           : globalWheelCooldownHours;
@@ -1113,7 +1254,6 @@
     }
   }
 
-  // 1. FOYDALANUVCHINING ALOHIDA BARABAN INTERVALINI BELGILASH (MASALAN: HAR 6 SOATDA YOKI 24 SOATDA)
   async function setUserWheelInterval(username) {
     const snap = await window.get(window.child(window.dbRef, `users/${username}`));
     const currentCustom = snap.exists() && snap.val().customCooldownHours !== undefined ? snap.val().customCooldownHours : globalWheelCooldownHours;
@@ -1133,7 +1273,6 @@
     } catch (e) { alert("Xato: " + e.message); }
   }
 
-  // 2. FOYDALANUVCHINING HOZIRGI KUTISH TAYMERINI ISTALGAN SOATGA SURISH (MASALAN: HOZIRDAN BOSHLAB 3.5 SOATDAN KEYIN OCHILSIN)
   async function setUserWheelDelay(username) {
     const snap = await window.get(window.child(window.dbRef, `users/${username}`));
     if (!snap.exists()) return;
@@ -1154,14 +1293,12 @@
       const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
       if (hoursNeeded === 0) {
-        // Darhol tiklash
         await window.update(window.child(window.dbRef, `users/${username}`), {
           spinsUsed: 0,
           lastSpinBatchTime: 0
         });
         alert(`@${username} uchun baraban darhol ochildi!`);
       } else {
-        // Aynan kiritilgan soatdan keyin ochiladigan qilib batch vaqtini orqaga surish
         const newBatchTime = now - (cooldownMs - (hoursNeeded * 60 * 60 * 1000));
         await window.update(window.child(window.dbRef, `users/${username}`), {
           spinsUsed: 3,
