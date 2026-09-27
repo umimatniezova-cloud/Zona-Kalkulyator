@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ozod Trader - Gann Pro Kalkulyator</title>
+  <title>Ozod Trader - Pro Kalkulyatorlar</title>
   
   <!-- Firebase SDK -->
   <script type="module">
@@ -34,68 +34,156 @@
   </script>
 
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #0b0f19; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 10px; }
+    /* ---------------- LIQUID GLASSMORPHISM 26 DIZAYN (iOS STYLE) ---------------- */
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; }
     
-    .card { background: #121826; border-radius: 12px; padding: 18px; width: 100%; max-width: 440px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid #1e293b; display: none; }
+    body { 
+      background: linear-gradient(135deg, #09131f, #112233, #1e3a5f);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #f1f5f9; 
+      display: flex; justify-content: center; align-items: center; 
+      min-height: 100vh; margin: 0; padding: 12px; 
+    }
+    
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* GLASS CARD */
+    .card { 
+      background: rgba(255, 255, 255, 0.07); 
+      backdrop-filter: blur(25px) saturate(200%); 
+      -webkit-backdrop-filter: blur(25px) saturate(200%); 
+      border-radius: 24px; 
+      padding: 22px; 
+      width: 100%; 
+      max-width: 440px; 
+      box-shadow: 
+        inset 0 1px 1px rgba(255, 255, 255, 0.25),
+        0 20px 50px rgba(0, 0, 0, 0.5); 
+      border: 1px solid rgba(255, 255, 255, 0.15); 
+      display: none; 
+    }
     .card.active { display: block; }
 
-    h2, h3 { text-align: center; margin-top: 0; color: #38bdf8; font-size: 1.15rem; margin-bottom: 12px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h2, h3 { text-align: center; margin-top: 0; color: #38bdf8; font-size: 1.2rem; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; font-weight: 700; letter-spacing: 0.3px; }
     
-    .input-group { margin-bottom: 10px; }
-    label { display: block; margin-bottom: 4px; font-size: 0.8rem; color: #94a3b8; }
-    input, select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #243044; background: #0b0f19; color: #fff; font-size: 0.9rem; outline: none; }
-    input:focus, select:focus { border-color: #38bdf8; }
+    .input-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1; font-weight: 500; }
     
-    button { width: 100%; padding: 11px; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 6px; }
-    button:disabled { background: #334155; cursor: not-allowed; color: #64748b; }
+    input, select { 
+      width: 100%; padding: 12px; border-radius: 14px; 
+      border: 1px solid rgba(255, 255, 255, 0.18); 
+      background: rgba(0, 0, 0, 0.25); 
+      color: #fff; font-size: 0.9rem; outline: none; 
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    input:focus, select:focus { border-color: #38bdf8; background: rgba(0, 0, 0, 0.45); box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
+    input::placeholder { color: rgba(255, 255, 255, 0.45); }
+
+    /* 💧 LIQUID GLASS iOS TUGMALAR 💧 */
+    button, .compact-btn { 
+      position: relative;
+      overflow: hidden;
+      width: 100%; padding: 13px; 
+      border-radius: 16px; font-size: 0.9rem; font-weight: 600; cursor: pointer; 
+      margin-top: 6px; 
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.4),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.2),
+        0 8px 20px rgba(0, 0, 0, 0.25);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      transition: left 0.6s ease;
+    }
+
+    button:hover::before { left: 100%; }
+
+    button:hover { 
+      transform: translateY(-3px) scale(1.02); 
+      box-shadow: 
+        inset 0 1px 3px rgba(255, 255, 255, 0.6),
+        0 12px 28px rgba(0, 0, 0, 0.35);
+    }
     
-    .btn-main { background: #0284c7; color: #fff; }
-    .btn-main:hover { background: #0369a1; }
-    .btn-sniper { background: #d97706; color: #fff; margin-top: 10px; font-size: 0.95rem; }
-    .btn-sniper:hover { background: #b45309; }
+    button:active { 
+      transform: translateY(1px) scale(0.96); 
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    button:disabled { 
+      background: rgba(51, 65, 85, 0.4) !important; 
+      cursor: not-allowed; color: #64748b; 
+      box-shadow: none; border-color: rgba(255, 255, 255, 0.05);
+      transform: none !important;
+    }
+
+    /* RANG VARIANTLARI */
+    .btn-main { background: linear-gradient(135deg, rgba(2, 132, 199, 0.65), rgba(14, 165, 233, 0.45)); }
+    .btn-sniper { background: linear-gradient(135deg, rgba(217, 119, 6, 0.7), rgba(245, 158, 11, 0.5)); font-size: 0.95rem; font-weight: 700; margin-top: 10px; }
+    .btn-danger { background: linear-gradient(135deg, rgba(225, 29, 72, 0.7), rgba(239, 68, 68, 0.5)); } 
+    .btn-success { background: linear-gradient(135deg, rgba(22, 163, 74, 0.7), rgba(34, 197, 94, 0.5)); } 
+    .btn-warning { background: linear-gradient(135deg, rgba(217, 119, 6, 0.7), rgba(250, 204, 21, 0.5)); } 
+    .btn-secondary { background: linear-gradient(135deg, rgba(71, 85, 105, 0.6), rgba(100, 116, 139, 0.4)); margin-top: 10px; } 
+    .btn-small { padding: 6px 12px; font-size: 0.78rem; width: auto; margin-top: 0; border-radius: 10px; }
     
-    .btn-danger { background: #ef4444; color: #fff; } .btn-danger:hover { background: #dc2626; }
-    .btn-success { background: #22c55e; color: #fff; } .btn-success:hover { background: #16a34a; }
-    .btn-warning { background: #f59e0b; color: #000; } .btn-warning:hover { background: #d97706; }
-    .btn-secondary { background: #475569; color: #fff; margin-top: 10px; } .btn-secondary:hover { background: #334155; }
-    .btn-small { padding: 5px 8px; font-size: 0.75rem; width: auto; margin-top: 0; }
+    .switch-link { text-align: center; margin-top: 14px; font-size: 0.85rem; color: #cbd5e1; }
+    .switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; cursor: pointer; text-shadow: 0 0 8px rgba(56,189,248,0.6); }
+
+    .user-header, .wallet-box, .box, .user-item, .sniper-result-box { 
+      background: rgba(255, 255, 255, 0.05); 
+      backdrop-filter: blur(15px);
+      border-radius: 16px; margin-bottom: 12px; 
+      border: 1px solid rgba(255, 255, 255, 0.12); 
+      padding: 14px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
     
-    .switch-link { text-align: center; margin-top: 12px; font-size: 0.8rem; color: #94a3b8; }
-    .switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; cursor: pointer; }
+    .user-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
+    .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; letter-spacing: 0.5px; }
+    .status-active { background: rgba(34, 197, 94, 0.25); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); text-shadow: 0 0 8px rgba(74,222,128,0.4); }
+    .status-expired { background: rgba(239, 68, 68, 0.25); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+    
+    .wallet-box { text-align: center; border-color: rgba(245, 158, 11, 0.4); }
+    .wallet-stars { font-size: 1.6rem; font-weight: 800; color: #facc15; margin-top: 5px; text-shadow: 0 0 12px rgba(250,204,21,0.5); }
 
-    .user-header { display: flex; justify-content: space-between; align-items: center; background: #0b0f19; padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #1e293b; }
-    .status-badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-    .status-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
-    .status-expired { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+    .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .compact-btn { padding: 11px; font-size: 0.85rem; margin-top: 0; font-weight: 600; }
 
-    .wallet-box { background: #0b0f19; border: 1px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 12px; text-align: center; }
-    .wallet-stars { font-size: 1.4rem; font-weight: bold; color: #facc15; margin-top: 5px; }
+    .sniper-result-box { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.35); text-align: center; margin-top: 15px; margin-bottom: 10px; }
+    .sniper-title { font-size: 0.9rem; font-weight: bold; color: #fff; display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 8px;}
+    .sniper-price { font-size: 1.1rem; font-weight: bold; color: #4ade80; text-align: left; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); line-height: 1.6; }
 
-    .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    .compact-btn { padding: 8px 10px; font-size: 0.8rem; margin-top: 0; font-weight: 600; }
-
-    .sniper-result-box { background: rgba(34, 197, 94, 0.05); border: 1px solid #22c55e; padding: 12px; border-radius: 8px; text-align: center; margin-top: 14px; margin-bottom: 10px; }
-    .sniper-title { font-size: 0.85rem; font-weight: bold; color: #fff; display: flex; justify-content: center; align-items: center; gap: 5px; }
-    .sniper-price { font-size: 1.1rem; font-weight: bold; color: #4ade80; margin-top: 4px; text-align: left; background: #0b0f19; padding: 8px; border-radius: 6px; border: 1px solid #1e293b; line-height: 1.5; }
-
-    .tp-table { width: 100%; border-collapse: collapse; margin-top: 8px; background: #0b0f19; border-radius: 6px; overflow: hidden; font-size: 0.82rem; }
-    .tp-table th { background: #d97706; color: #fff; padding: 7px; text-align: center; font-size: 0.8rem; }
-    .tp-table td { padding: 7px; text-align: center; border-bottom: 1px solid #1e293b; }
+    .tp-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(0,0,0,0.25); border-radius: 12px; overflow: hidden; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.08); }
+    .tp-table th { background: rgba(217, 119, 6, 0.65); color: #fff; padding: 10px; text-align: center; font-size: 0.8rem; backdrop-filter: blur(10px); }
+    .tp-table td { padding: 10px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .tp-table tr:last-child td { border-bottom: none; }
-    .val-green { color: #4ade80; font-weight: bold; }
-    .val-red { color: #f87171; font-weight: bold; }
+    .val-green { color: #4ade80; font-weight: bold; text-shadow: 0 0 6px rgba(74,222,128,0.4); }
 
-    .box { background: #0b0f19; padding: 10px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 8px; }
     .row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.85rem; }
-    .user-item { background: #0b0f19; border: 1px solid #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 8px; }
     .user-item-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px; font-size: 0.85rem; }
-    .user-actions { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
-    .blocked-msg { text-align: center; padding: 15px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 8px; color: #f87171; margin-top: 12px; font-size: 0.85rem; }
-    .badge-count { background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.7rem; margin-left: 4px; }
+    .user-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .blocked-msg { text-align: center; padding: 16px; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; color: #fca5a5; margin-top: 12px; font-size: 0.88rem; backdrop-filter: blur(10px); }
+    .badge-count { background: #ef4444; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.7rem; margin-left: 4px; font-weight: bold; }
 
-    .wheel-container { position: relative; width: 170px; height: 170px; margin: 15px auto; border-radius: 50%; border: 4px solid #f59e0b; overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1); background: conic-gradient(#0284c7 0 60deg, #22c55e 60deg 120deg, #ef4444 120deg 180deg, #f59e0b 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); }
-    .wheel-pointer { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 15px solid #fff; z-index: 10; }
+    .wheel-container { position: relative; width: 170px; height: 170px; margin: 15px auto; border-radius: 50%; border: 4px solid rgba(245, 158, 11, 0.8); overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.99, 0.18, 1); background: conic-gradient(#0284c7 0 60deg, #22c55e 60deg 120deg, #ef4444 120deg 180deg, #f59e0b 180deg 240deg, #8b5cf6 240deg 300deg, #ec4899 300deg 360deg); box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); }
+    .wheel-pointer { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 16px solid #fff; z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
   </style>
 </head>
 <body>
@@ -111,7 +199,7 @@
       <label>Parol:</label>
       <input type="password" id="loginPass" placeholder="Parolni kiriting">
     </div>
-    <button class="btn-main" onclick="login()">Tizimga Kirish</button>
+    <button class="btn-main" onclick="login()">Tizimga Kirish 🚀</button>
     <div class="switch-link">
       Akkauntingiz yo'qmi? <a onclick="showCard('registerCard')">Ro'yxatdan o'tish</a>
     </div>
@@ -132,18 +220,18 @@
       <label>Parol yarating:</label>
       <input type="password" id="regPass" placeholder="Yangi parol">
     </div>
-    <button class="btn-success" onclick="register()">Ro'yxatdan o'tish</button>
+    <button class="btn-success" onclick="register()">Ro'yxatdan o'tish ✨</button>
     <div class="switch-link">
       Akkauntingiz bormi? <a onclick="showCard('loginCard')">Kirish</a>
     </div>
   </div>
 
-  <!-- ASOSIY GANN PRO KALKULYATOR EKRANI -->
+  <!-- ASOSIY KALKULYATOR EKRANI -->
   <div class="card" id="calcCard">
     <div class="user-header">
       <div>
-        <strong id="displayUsername" style="font-size: 0.85rem;">Foydalanuvchi</strong>
-        <div style="font-size: 0.7rem; color: #94a3b8;" id="subTimeLeft">Obuna: Tekshirilmoqda...</div>
+        <strong id="displayUsername" style="font-size: 0.95rem; color: #fff;">Foydalanuvchi</strong>
+        <div style="font-size: 0.82rem; color: #e2e8f0; margin-top:3px;" id="subTimeLeft">⏱️ Obuna: Hisoblanmoqda...</div>
       </div>
       <div>
         <span id="subStatusBadge" class="status-badge status-expired">...</span>
@@ -151,99 +239,120 @@
       </div>
     </div>
 
-    <!-- 4 TA TUGMA (HAMYON, BARABAN, STARS, PREMIUM) -->
     <div class="compact-grid">
       <button class="compact-btn btn-warning" onclick="showCard('walletSectionCard')">💼 Hamyon</button>
-      <button class="compact-btn" style="background: #38bdf8; color: #000;" onclick="showCard('wheelSectionCard')">🎰 Baraban</button>
+      <button class="compact-btn" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.7), rgba(14, 165, 233, 0.5));" onclick="showCard('wheelSectionCard')">🎰 Baraban</button>
     </div>
     
-    <div class="compact-grid" style="margin-bottom: 10px;">
-      <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">⭐ Stars Sotib Olish</button>
-      <button class="compact-btn" style="background: #8b5cf6; color: #fff;" onclick="showCard('subSectionCard')">👑 Premium Olish</button>
+    <div class="compact-grid" style="margin-bottom: 12px;">
+      <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">⭐ Stars Olish</button>
+      <button class="compact-btn" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.7), rgba(168, 85, 247, 0.5));" onclick="showCard('subSectionCard')">👑 Premium</button>
     </div>
 
-    <!-- TUGMA: BOSILGANDA PROMOKOD KIRITISH OYNASI OCHILADI -->
-    <button class="compact-btn" style="background: #0ea5e9; color: #fff; width: 100%; margin-bottom: 12px; padding: 10px;" onclick="openPromoModal()">🎁 Promokod Kiritish</button>
+    <button class="compact-btn" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.7), rgba(56, 189, 248, 0.5)); width: 100%; margin-bottom: 15px; padding: 12px;" onclick="openPromoModal()">🎁 Promokod Kiritish</button>
 
-    <!-- PROMOKOD OYNASI (Boshida yopiq bo'ladi) -->
-    <div class="box" id="promoModalBox" style="display: none; border-color: #0ea5e9; margin-bottom: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+    <!-- PROMOKOD OYNASI -->
+    <div class="box" id="promoModalBox" style="display: none; border-color: rgba(14, 165, 233, 0.5); margin-bottom: 15px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
         <span style="font-size: 0.85rem; font-weight: bold; color: #38bdf8;">🎁 Promokodni kiriting</span>
-        <button class="btn-small btn-danger" style="padding: 2px 6px;" onclick="closePromoModal()">✕</button>
+        <button class="btn-small btn-danger" style="padding: 4px 8px;" onclick="closePromoModal()">✕</button>
       </div>
-      <div class="input-group" style="margin-bottom: 6px;">
-        <input type="text" id="mainPromoInput" placeholder="Masalan: ALGORITHM" style="text-transform: uppercase; font-size: 0.85rem; padding: 8px;">
+      <div class="input-group" style="margin-bottom: 8px;">
+        <input type="text" id="mainPromoInput" placeholder="Masalan: ALGORITHM" style="text-transform: uppercase; font-size: 0.9rem; padding: 10px;">
       </div>
-      <button class="btn-small btn-success" style="width: 100%; padding: 8px;" onclick="redeemMainPromoCode()">Faollashtirish ✅</button>
+      <button class="btn-small btn-success" style="width: 100%; padding: 10px;" onclick="redeemMainPromoCode()">Faollashtirish ✅</button>
     </div>
 
-    <h2>Ozod Trader - Gann Pro Kalkulyator</h2>
-
-    <div id="calcContent">
-      <div class="input-group">
-        <select id="tfSelect">
-          <option value="5">M5 (Intraday Scalp)</option>
-          <option value="15">M15 (Intraday)</option>
-          <option value="60">H1 (Swing)</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Yo'nalish (Ekstremum turi):</label>
-        <select id="direction">
-          <option value="BUY">LOW Nuqta (BUY ZONA & TP)</option>
-          <option value="SELL">HIGH Nuqta (SELL ZONA & TP)</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Ekstremum Narx (P):</label>
-        <input type="number" step="0.01" id="pPrice" value="4654">
-      </div>
-
-      <div class="input-group">
-        <label>Sana (Kun, masalan: 24):</label>
-        <input type="number" id="dayNum" value="24">
-      </div>
-
-      <div class="input-group">
-        <label>Ekstremum Soat / Vaqti (HH:MM):</label>
-        <select id="timeSelect">
-          <option value="15:45">15:45</option>
-          <option value="16:00">16:00</option>
-          <option value="16:15">16:15</option>
-        </select>
-      </div>
-
-      <button class="btn-sniper" onclick="calculateSniper()">Sniper Algoritm Hisoblash</button>
-
-      <!-- NATIJALAR -->
-      <div id="results" style="display: none;">
-        <div class="sniper-result-box">
-          <div class="sniper-title" id="entryTitle">🎯 SNIPER BUY ZONALAR (KIRISH)</div>
-          <div class="sniper-price" id="entryPrice">
-            1-Entry: $4656.40<br>
-            2-Entry: $4657.90
-          </div>
-        </div>
-
-        <table class="tp-table">
-          <thead>
-            <tr>
-              <th>TP Nomi</th>
-              <th>Target Narx</th>
-              <th>Vaqt</th>
-            </tr>
-          </thead>
-          <tbody id="tpTableBody">
-          </tbody>
-        </table>
-      </div>
+    <!-- TAB MENU -->
+    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+      <button class="compact-btn btn-main" style="margin:0;" onclick="switchTab(1)" id="tab1">🎯 Gann Pro</button>
+      <button class="compact-btn btn-secondary" style="margin:0;" onclick="switchTab(2)" id="tab2">📉 Atkat (Fib)</button>
     </div>
 
     <div id="blockedMessage" class="blocked-msg" style="display: none;">
       ⚠️ Sizda obuna mavjud emas yoki muddati tugagan!<br>
       Aktivlashtirish uchun Admin bilan bog'laning yoki Stars yig'ib Premium oling.
+    </div>
+
+    <div id="calcContentContainer">
+      <!-- 1-KALKULYATOR: GANN PRO -->
+      <div id="calcContent1">
+        <div class="input-group">
+          <select id="tfSelect">
+            <option value="5">M5 (Intraday Scalp)</option>
+            <option value="15">M15 (Intraday)</option>
+            <option value="60">H1 (Swing)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Yo'nalish (Ekstremum turi):</label>
+          <select id="direction">
+            <option value="BUY">LOW Nuqta (BUY ZONA & TP)</option>
+            <option value="SELL">HIGH Nuqta (SELL ZONA & TP)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Ekstremum Narx (P):</label>
+          <input type="number" step="0.01" id="pPrice" value="4654">
+        </div>
+        <div class="input-group">
+          <label>Sana (Kun, masalan: 24):</label>
+          <input type="number" id="dayNum" value="24">
+        </div>
+        <div class="input-group">
+          <label>Ekstremum Soat / Vaqti (HH:MM):</label>
+          <select id="timeSelect">
+            <option value="15:45">15:45</option>
+            <option value="16:00">16:00</option>
+            <option value="16:15">16:15</option>
+          </select>
+        </div>
+        <button class="btn-sniper" onclick="calculateSniper()">Sniper Algoritm Hisoblash ⚡</button>
+
+        <div id="results" style="display: none;">
+          <div class="sniper-result-box">
+            <div class="sniper-title" id="entryTitle">🎯 SNIPER BUY ZONALAR (KIRISH)</div>
+            <div class="sniper-price" id="entryPrice">
+              1-Entry: $4656.40<br>
+              2-Entry: $4657.90
+            </div>
+          </div>
+          <table class="tp-table">
+            <thead>
+              <tr><th>TP Nomi</th><th>Target Narx</th><th>Vaqt</th></tr>
+            </thead>
+            <tbody id="tpTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2-KALKULYATOR: ATKAT (RETRACEMENT) -->
+      <div id="calcContent2" style="display: none;">
+        <div class="input-group">
+          <label>Trend Yo'nalishi (Pozitsiya):</label>
+          <select id="atkatTrend">
+            <option value="LONG">O'suvchi Trend (Atkat pastga tushadi - BUY)</option>
+            <option value="SHORT">Kamayuvchi Trend (Atkat tepaga chiqadi - SELL)</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Maksimum Narx (Max):</label>
+          <input type="number" step="0.0001" id="atkatMax" placeholder="Maksimal narxni kiriting">
+        </div>
+        <div class="input-group">
+          <label>Minimum Narx (Min):</label>
+          <input type="number" step="0.0001" id="atkatMin" placeholder="Minimal narxni kiriting">
+        </div>
+        <button class="btn-sniper" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.7), rgba(168, 85, 247, 0.5));" onclick="calculateAtkat()">Atkat Zonalarni Hisoblash 🎯</button>
+
+        <div id="atkatResults" style="display: none;">
+          <div class="sniper-result-box" style="background: rgba(139, 92, 246, 0.12); border-color: rgba(139, 92, 246, 0.35);">
+            <div class="sniper-title">🎯 ATKAT ENTRY ZONALAR (FIBONACCI)</div>
+            <div class="sniper-price" id="atkatEntryPrice" style="color: #c4b5fd;">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -251,13 +360,12 @@
   <div class="card" id="walletSectionCard">
     <h2>💼 Mening Hamyonim</h2>
     <div class="wallet-box">
-      <div style="font-size: 0.85rem; color: #94a3b8;">Hozirgi balansingiz:</div>
+      <div style="font-size: 0.85rem; color: #cbd5e1;">Hozirgi balansingiz:</div>
       <div class="wallet-stars" id="walletStars">⭐ 0 Stars</div>
     </div>
-
-    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
       <button class="compact-btn btn-success" onclick="showCard('shopSectionCard')">➕ Stars Sotib Olish</button>
-      <button class="compact-btn" style="background: #8b5cf6; color: #fff;" onclick="showCard('subSectionCard')">👑 Premiumga Almashish</button>
+      <button class="compact-btn" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.7), rgba(168, 85, 247, 0.5));" onclick="showCard('subSectionCard')">👑 Premiumga Almashish</button>
     </div>
     <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
@@ -265,7 +373,7 @@
   <!-- BARABAN EKRANI -->
   <div class="card" id="wheelSectionCard">
     <h2>🎰 Omad Barabani</h2>
-    <div style="font-size: 0.85rem; color: #38bdf8; text-align: center; margin-bottom: 6px;" id="wheelSpinsText">Qolgan imkoniyatlar: ...</div>
+    <div style="font-size: 0.85rem; color: #38bdf8; text-align: center; margin-bottom: 10px;" id="wheelSpinsText">Qolgan imkoniyatlar: ...</div>
     <div style="position: relative;">
       <div class="wheel-pointer"></div>
       <div class="wheel-container" id="wheel"></div>
@@ -281,7 +389,7 @@
       <div class="row"><span>7,000 Stars</span><span style="color: #4ade80; font-weight: bold;">10$</span></div>
       <div class="row"><span>30,000 Stars</span><span style="color: #4ade80; font-weight: bold;">30$</span></div>
     </div>
-    <p style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-bottom: 12px;">
+    <p style="font-size: 0.85rem; color: #cbd5e1; text-align: center; margin-bottom: 12px;">
       Stars sotib olish uchun telegram orqali admin bilan bog'laning!
     </p>
     <a href="https://t.me/L7X7D" target="_blank" style="text-decoration: none;">
@@ -295,15 +403,15 @@
     <h2>👑 Premium Xarid Qilish</h2>
     <div class="box">
       <div class="row"><span>1 Kunlik Premium</span><span>777 Stars</span></div>
-      <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(1, 777)">Sotib olish</button>
+      <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(1, 777)">Sotib olish</button>
     </div>
     <div class="box">
       <div class="row"><span>7 Kunlik Premium</span><span>7,000 Stars</span></div>
-      <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(7, 7000)">Sotib olish</button>
+      <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(7, 7000)">Sotib olish</button>
     </div>
     <div class="box">
       <div class="row"><span>30 Kunlik Premium</span><span>30,000 Stars</span></div>
-      <button class="btn-small btn-warning" style="width: 100%; margin-top: 4px;" onclick="applyForPremium(30, 30000)">Sotib olish</button>
+      <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(30, 30000)">Sotib olish</button>
     </div>
     <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
   </div>
@@ -313,6 +421,15 @@
     <div class="user-header">
       <div><strong>👑 ADMIN PANEL</strong></div>
       <button class="btn-small btn-danger" onclick="logout()">Chiqish</button>
+    </div>
+
+    <h3>🎡 Baraban Vaqtini Sozlash (Hamma uchun)</h3>
+    <div class="box" style="margin-bottom: 15px;">
+      <div class="input-group">
+        <label>Kutish vaqti (soatda):</label>
+        <input type="number" id="adminWheelCooldownInput" placeholder="Masalan: 12 yoki 24">
+      </div>
+      <button class="btn-small btn-success" style="width: 100%; margin-top: 6px;" onclick="updateGlobalWheelCooldown()">Vaqtni Saqlash ⚙️</button>
     </div>
 
     <h3>🎁 Promokod Qo'shish</h3>
@@ -327,9 +444,9 @@
       </div>
       <div class="input-group">
         <label>Tugash sanasi va vaqti:</label>
-        <input type="datetime-local" id="adminPromoExpire">
+        <input type="datetime-local" id="adminPromoExpire" style="color-scheme: dark;">
       </div>
-      <button class="btn-small btn-success" style="width: 100%; margin-top: 4px;" onclick="createNewPromoCode()">Promokod Yaratish ✅</button>
+      <button class="btn-small btn-success" style="width: 100%; margin-top: 6px;" onclick="createNewPromoCode()">Promokod Yaratish ✅</button>
     </div>
 
     <h3>🎟️ Faol Promokodlar</h3>
@@ -353,13 +470,32 @@
     document.getElementById(cardId).classList.add('active');
   }
 
-  function openPromoModal() {
-    document.getElementById('promoModalBox').style.display = 'block';
+  function switchTab(tabNum) {
+    if(tabNum === 1) {
+      document.getElementById('calcContent1').style.display = 'block';
+      document.getElementById('calcContent2').style.display = 'none';
+      document.getElementById('tab1').className = 'compact-btn btn-main';
+      document.getElementById('tab2').className = 'compact-btn btn-secondary';
+    } else {
+      document.getElementById('calcContent1').style.display = 'none';
+      document.getElementById('calcContent2').style.display = 'block';
+      document.getElementById('tab1').className = 'compact-btn btn-secondary';
+      document.getElementById('tab2').className = 'compact-btn btn-main';
+    }
   }
 
-  function closePromoModal() {
-    document.getElementById('promoModalBox').style.display = 'none';
-  }
+  function openPromoModal() { document.getElementById('promoModalBox').style.display = 'block'; }
+  function closePromoModal() { document.getElementById('promoModalBox').style.display = 'none'; }
+
+  window.onload = function() {
+    if (currentUser) {
+      if (currentUser.role === 'admin') {
+        loadAdminPanel();
+      } else {
+        loadUserPanel();
+      }
+    }
+  };
 
   async function register() {
     const name = document.getElementById('regName').value.trim();
@@ -387,7 +523,6 @@
         lastSpinBatchTime: 0,
         spinsUsed: 0,
         totalSpins: 0,
-        spinCooldownHours: 12,
         redeemedPromos: {}
       };
 
@@ -432,89 +567,116 @@
     showCard('loginCard');
   }
 
-  function loadUserPanel() {
+  // USER PANELINI YUKLASH VA REAL-TIME SO'ROV VA LOKAL TAYMERNI ISHGA TUSHIRISH
+  async function loadUserPanel() {
     showCard('calcCard');
-    document.getElementById('displayUsername').innerText = currentUser.name;
-    updateUserSubscription();
+    document.getElementById('displayUsername').innerText = currentUser.name || currentUser.username;
+    
+    // 1-marta bazadan yangilaymiz
+    await fetchFreshUserData();
+
+    // Lokal taymerni yoqamiz (Har sekundda silliq orqaga hisoblaydi)
     if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(updateUserSubscription, 1000);
+    updateTimerDisplay(); 
+    timerInterval = setInterval(updateTimerDisplay, 1000);
   }
 
-  async function updateUserSubscription() {
+  // BAZADAN VAQT VA STARSLARNI YANGILAB OLISH
+  async function fetchFreshUserData() {
+    if (!currentUser || !currentUser.username) return;
     try {
       const snapshot = await window.get(window.child(window.dbRef, `users/${currentUser.username}`));
       if (snapshot.exists()) {
-        const userData = snapshot.val();
-        currentUser = userData; 
-        const now = Date.now();
-        const badge = document.getElementById('subStatusBadge');
-        const timeLeft = document.getElementById('subTimeLeft');
-        const calcContent = document.getElementById('calcContent');
-        const blockedMsg = document.getElementById('blockedMessage');
-
-        document.getElementById('walletStars').innerText = `⭐ ${userData.stars || 0} Stars`;
-
-        const lastBatchTime = userData.lastSpinBatchTime || 0;
-        let spinsUsed = userData.spinsUsed || 0;
-        const userCooldownHours = userData.spinCooldownHours !== undefined ? userData.spinCooldownHours : 12;
-        const cooldownMs = userCooldownHours * 60 * 60 * 1000;
-
-        if (now - lastBatchTime >= cooldownMs) {
-          spinsUsed = 0; 
-        }
-
-        const remainingSpins = 3 - spinsUsed;
-        const spinBtn = document.getElementById('spinBtn');
-
-        if (remainingSpins > 0) {
-          document.getElementById('wheelSpinsText').innerText = `Imkoniyat: ${remainingSpins} / 3 marta`;
-          spinBtn.disabled = false;
-        } else {
-          const waitDiff = cooldownMs - (now - lastBatchTime);
-          const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
-          const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
-          const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
-          document.getElementById('wheelSpinsText').innerText = `Qayta aylantirish: ${wHours}s ${wMins}m ${wSecs}s dan keyin`;
-          spinBtn.disabled = true;
-        }
-
-        if (userData.subUntil && userData.subUntil > now) {
-          const diff = userData.subUntil - now;
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-          badge.innerText = "PREMIUM";
-          badge.className = "status-badge status-active";
-          timeLeft.innerText = `Qoldi: ${days}k ${hours}s ${mins}m ${secs}s`;
-          
-          calcContent.style.display = "block";
-          blockedMsg.style.display = "none";
-        } else {
-          badge.innerText = "NOFAOL";
-          badge.className = "status-badge status-expired";
-          timeLeft.innerText = "Obuna vaqti tugagan";
-          
-          calcContent.style.display = "none";
-          blockedMsg.style.display = "block";
-        }
+        currentUser = snapshot.val();
+        localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
+        document.getElementById('walletStars').innerText = `⭐ ${currentUser.stars || 0} Stars`;
       }
     } catch (e) {
-      console.log("Xato: " + e.message);
+      console.log("DB update error:", e);
+    }
+  }
+
+  // HAR SEKUNDDA QOTMASDAN VAQTNI KO'RSATUVCHI ANIQ TAYMER
+  async function updateTimerDisplay() {
+    if (!currentUser) return;
+
+    const now = Date.now();
+    let subUntil = Number(currentUser.subUntil || 0);
+
+    // Agar sekundda bo'lsa millisekundga o'tkazish
+    if (subUntil > 0 && subUntil < 10000000000) {
+      subUntil = subUntil * 1000;
+    }
+
+    const badge = document.getElementById('subStatusBadge');
+    const timeLeft = document.getElementById('subTimeLeft');
+    const calcContentContainer = document.getElementById('calcContentContainer');
+    const blockedMsg = document.getElementById('blockedMessage');
+
+    // BARABAN VAQTI TAYMERI
+    let globalCooldownHours = 12;
+    try {
+      const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
+      if (cooldownSnap.exists()) globalCooldownHours = Number(cooldownSnap.val());
+    } catch(e){}
+
+    const lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
+    let spinsUsed = Number(currentUser.spinsUsed || 0);
+    const cooldownMs = globalCooldownHours * 60 * 60 * 1000;
+
+    if (now - lastBatchTime >= cooldownMs) { spinsUsed = 0; }
+    const remainingSpins = 3 - spinsUsed;
+    const spinBtn = document.getElementById('spinBtn');
+
+    if (spinBtn) {
+      if (remainingSpins > 0) {
+        document.getElementById('wheelSpinsText').innerText = `Imkoniyat: ${remainingSpins} / 3 marta`;
+        spinBtn.disabled = false;
+      } else {
+        const waitDiff = cooldownMs - (now - lastBatchTime);
+        const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
+        const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
+        document.getElementById('wheelSpinsText').innerText = `Qayta aylantirish: ${wHours}s ${wMins}m ${wSecs}s dan keyin`;
+        spinBtn.disabled = true;
+      }
+    }
+
+    // PREMIUM MUDDATINI ANIQ FORMATLAB HAR SEKUNDDA TIK-TAK KO'RSATISH
+    if (subUntil && subUntil > now) {
+      const diff = subUntil - now;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      const hStr = String(hours).padStart(2, '0');
+      const mStr = String(mins).padStart(2, '0');
+      const sStr = String(secs).padStart(2, '0');
+
+      badge.innerText = "PREMIUM 👑";
+      badge.className = "status-badge status-active";
+      timeLeft.innerHTML = `⏱️ Qoldi: <b style="color:#4ade80; font-size:0.9rem;">${days} kun, ${hStr}:${mStr}:${sStr}</b>`;
+      
+      calcContentContainer.style.display = "block";
+      blockedMsg.style.display = "none";
+    } else {
+      badge.innerText = "NOFAOL ❌";
+      badge.className = "status-badge status-expired";
+      timeLeft.innerHTML = `⏱️ <span style="color:#f87171; font-weight:bold;">Obuna vaqti tugagan</span>`;
+      
+      calcContentContainer.style.display = "none";
+      blockedMsg.style.display = "block";
     }
   }
 
   async function processPromoActivation(rawCode) {
-    if (!rawCode) {
-      alert("Iltimos, promokodni kiriting!");
-      return;
-    }
+    if (!rawCode) { alert("Iltimos, promokodni kiriting!"); return; }
     const promoCode = rawCode.toLowerCase();
 
     try {
       if (currentUser.redeemedPromos && currentUser.redeemedPromos[promoCode]) {
-        alert("Siz bu promokodni oldin ishlatgansiz! Uni qayta ishlatib bo'lmaydi.");
+        alert("Siz bu promokodni oldin ishlatgansiz!");
         return;
       }
 
@@ -532,12 +694,10 @@
         return;
       }
 
-      const currentStars = currentUser.stars || 0;
-      const addedStars = promoData.stars;
+      const currentStars = Number(currentUser.stars || 0);
+      const addedStars = Number(promoData.stars);
 
-      if (!currentUser.redeemedPromos) {
-        currentUser.redeemedPromos = {};
-      }
+      if (!currentUser.redeemedPromos) { currentUser.redeemedPromos = {}; }
       currentUser.redeemedPromos[promoCode] = true;
 
       await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
@@ -547,8 +707,9 @@
 
       document.getElementById('mainPromoInput').value = "";
       closePromoModal();
-      alert(`Tabriklaymiz! Promokod muvaffaqiyatli ishlatildi. Balansingizga +${addedStars} Stars qo'shildi! 🎉`);
-      updateUserSubscription();
+      alert(`Tabriklaymiz! Balansingizga +${addedStars} Stars qo'shildi! 🎉`);
+      await fetchFreshUserData();
+      updateTimerDisplay();
     } catch (e) {
       alert("Xatolik yuz berdi: " + e.message);
     }
@@ -561,10 +722,13 @@
 
   async function spinWheel() {
     const now = Date.now();
-    let lastBatchTime = currentUser.lastSpinBatchTime || 0;
-    let spinsUsed = currentUser.spinsUsed || 0;
-    const userCooldownHours = currentUser.spinCooldownHours !== undefined ? currentUser.spinCooldownHours : 12;
-    const cooldownMs = userCooldownHours * 60 * 60 * 1000;
+    let globalCooldownHours = 12;
+    const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
+    if (cooldownSnap.exists()) globalCooldownHours = Number(cooldownSnap.val());
+
+    let lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
+    let spinsUsed = Number(currentUser.spinsUsed || 0);
+    const cooldownMs = globalCooldownHours * 60 * 60 * 1000;
 
     if (now - lastBatchTime >= cooldownMs) {
       spinsUsed = 0;
@@ -572,12 +736,12 @@
     }
 
     if (spinsUsed >= 3) {
-      alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${userCooldownHours} soatdan keyin qayta urinib ko'ring.`);
+      alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${globalCooldownHours} soatdan keyin qayta urinib ko'ring.`);
       return;
     }
 
     spinsUsed++;
-    let totalSpins = (currentUser.totalSpins || 0) + 1;
+    let totalSpins = Number(currentUser.totalSpins || 0) + 1;
     let wonStars = (totalSpins % 30 === 15 || totalSpins % 30 === 0) ? 30 : (Math.floor(Math.random() * 21) + 5);
 
     document.getElementById('spinBtn').disabled = true;
@@ -585,7 +749,7 @@
     document.getElementById('wheel').style.transform = `rotate(${currentWheelRotation}deg)`;
 
     setTimeout(async () => {
-      const newStars = (currentUser.stars || 0) + wonStars;
+      const newStars = Number(currentUser.stars || 0) + wonStars;
       await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
         stars: newStars,
         lastSpinBatchTime: lastBatchTime,
@@ -593,12 +757,13 @@
         totalSpins: totalSpins
       });
       alert(`Tabriklaymiz! Siz ${wonStars} ta Stars yutib oldingiz! 🎉`);
-      updateUserSubscription();
+      await fetchFreshUserData();
+      updateTimerDisplay();
     }, 4000);
   }
 
   async function applyForPremium(days, requiredStars) {
-    const currentStars = currentUser.stars || 0;
+    const currentStars = Number(currentUser.stars || 0);
     if (currentStars < requiredStars) {
       alert("Balansda stars yetarli emas!");
       return;
@@ -612,7 +777,7 @@
       const reqId = Date.now();
       const reqData = {
         username: currentUser.username,
-        name: currentUser.name,
+        name: currentUser.name || currentUser.username,
         days: days,
         stars: requiredStars,
         date: new Date().toLocaleString()
@@ -621,17 +786,95 @@
       await window.set(window.child(window.dbRef, `requests/${reqId}`), reqData);
       alert("Ariza yuborildi! Admin tez orada Premium beradi.");
       showCard('calcCard');
-      updateUserSubscription();
+      await fetchFreshUserData();
+      updateTimerDisplay();
     } catch (e) {
       alert("Xato: " + e.message);
     }
   }
 
+  function calculateSniper() {
+    const p = parseFloat(document.getElementById('pPrice').value);
+    const dir = document.getElementById('direction').value;
+    if(isNaN(p)) return;
+
+    let e1, e2;
+    if(dir === 'BUY') {
+        e1 = p * 1.0005; e2 = p * 0.9995;
+    } else {
+        e1 = p * 0.9995; e2 = p * 1.0005;
+    }
+
+    document.getElementById('entryPrice').innerHTML = `1-Entry: $${e1.toFixed(3)}<br>2-Entry: $${e2.toFixed(3)}`;
+    document.getElementById('tpTableBody').innerHTML = `
+      <tr><td>TP 1 (15m)</td><td class="val-green">$${(p * (dir==='BUY'?1.002:0.998)).toFixed(3)}</td><td>15m</td></tr>
+      <tr><td>TP 2 (1H)</td><td class="val-green">$${(p * (dir==='BUY'?1.005:0.995)).toFixed(3)}</td><td>1h</td></tr>
+    `;
+    document.getElementById('results').style.display = 'block';
+  }
+
+  function calculateAtkat() {
+    const maxP = parseFloat(document.getElementById('atkatMax').value);
+    const minP = parseFloat(document.getElementById('atkatMin').value);
+    const trend = document.getElementById('atkatTrend').value;
+
+    if(isNaN(maxP) || isNaN(minP) || maxP <= minP) {
+      alert("Narxlarni to'g'ri kiriting (Max kattaroq bo'lishi kerak)!");
+      return;
+    }
+
+    const diff = maxP - minP;
+    let entry1, entry2;
+
+    if(trend === "LONG") {
+      entry1 = maxP - (diff * 0.50);
+      entry2 = maxP - (diff * 0.618);
+    } else {
+      entry1 = minP + (diff * 0.50);
+      entry2 = minP + (diff * 0.618);
+    }
+
+    document.getElementById('atkatEntryPrice').innerHTML = `
+      1-Entry ZONA (50.0%): <b>${entry1.toFixed(5)}</b><br>
+      2-Entry ZONA (61.8%): <b>${entry2.toFixed(5)}</b>
+    `;
+    document.getElementById('atkatResults').style.display = 'block';
+  }
+
+  /* ---------------- ADMIN PANEL FUNKSIYALARI ---------------- */
+
   function loadAdminPanel() {
     showCard('adminCard');
+    loadGlobalWheelCooldown();
     renderAdminData();
     if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(renderAdminData, 3000);
+    timerInterval = setInterval(renderAdminData, 4000);
+  }
+
+  async function loadGlobalWheelCooldown() {
+    try {
+      const snap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
+      if (snap.exists()) {
+        document.getElementById('adminWheelCooldownInput').value = snap.val();
+      } else {
+        document.getElementById('adminWheelCooldownInput').value = 12;
+      }
+    } catch(e) {}
+  }
+
+  async function updateGlobalWheelCooldown() {
+    const hours = parseFloat(document.getElementById('adminWheelCooldownInput').value);
+    if (isNaN(hours) || hours < 0) {
+      alert("Iltimos, soatni to'g'ri kiriting!");
+      return;
+    }
+
+    try {
+      await window.set(window.child(window.dbRef, 'settings/wheelCooldownHours'), hours);
+      alert(`Barcha foydalanuvchilar uchun baraban kutish vaqti ${hours} soatga o'zgartirildi!`);
+    } catch (e) {
+      alert("Xato: " + e.message);
+    }
   }
 
   async function renderAdminData() {
@@ -662,11 +905,9 @@
 
       document.getElementById('adminPromoCode').value = "";
       document.getElementById('adminPromoExpire').value = "";
-      alert(`"${promoCode}" promokodi yaratildi! (${starsVal} Stars)`);
+      alert(`"${promoCode}" promokodi yaratildi!`);
       renderAdminPromos();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
   async function renderAdminPromos() {
@@ -690,14 +931,14 @@
 
         const item = document.createElement('div');
         item.className = 'user-item';
-        item.style.borderColor = isExpired ? '#ef4444' : '#1e293b';
+        item.style.borderColor = isExpired ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255,255,255,0.12)';
         item.innerHTML = `
           <div class="user-item-header">
             <span style="color: #38bdf8; text-transform: uppercase;">🎁 ${promo.code}</span>
             <span style="color: #facc15;">+${promo.stars} Stars</span>
           </div>
-          <div style="font-size: 0.75rem; color: ${isExpired ? '#f87171' : '#94a3b8'}; margin-bottom: 4px;">
-            Tugash vaqti: ${expireDateStr} ${isExpired ? '(Muddati tugagan ❌)' : ''}
+          <div style="font-size: 0.75rem; color: ${isExpired ? '#fca5a5' : '#cbd5e1'}; margin-bottom: 4px;">
+            Muddati: ${expireDateStr} ${isExpired ? '(Tugagan ❌)' : ''}
           </div>
           <div class="user-actions">
             <button class="btn-small btn-danger" onclick="deletePromoCode('${promo.code}')">O'chirish 🗑️</button>
@@ -706,7 +947,7 @@
         container.appendChild(item);
       });
     } catch (e) {
-      document.getElementById('promoListContainer').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Ma'lumotni o'qishda xatolik</p>";
+      document.getElementById('promoListContainer').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik</p>";
     }
   }
 
@@ -716,9 +957,7 @@
       await window.remove(window.child(window.dbRef, `promocodes/${code}`));
       alert("Promokod o'chirildi!");
       renderAdminPromos();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
   async function renderRequestsList() {
@@ -729,7 +968,7 @@
       container.innerHTML = "";
 
       if (!snapshot.exists()) {
-        container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Arizalar mavjud emas</p>";
+        container.innerHTML = "<p style='text-align:center; color:#cbd5e1; font-size:0.8rem;'>Arizalar mavjud emas</p>";
         badge.style.display = 'none';
         previousRequestsCount = 0;
         return;
@@ -743,7 +982,6 @@
         alert("📩 Yangi Premium so'rovi tushdi!");
       }
       previousRequestsCount = currentCount;
-
       badge.innerText = currentCount;
       badge.style.display = 'inline-block';
 
@@ -751,55 +989,49 @@
         const req = requests[reqId];
         const item = document.createElement('div');
         item.className = 'user-item';
-        item.style.borderColor = '#f59e0b';
+        
         item.innerHTML = `
-          <div><strong>${req.name} (@${req.username})</strong></div>
-          <div style="font-size:0.8rem; color:#38bdf8; margin: 2px 0;">${req.days} kunlik Premium uchun ${req.stars} stars to'lov qildi.</div>
-          <div style="font-size:0.7rem; color:#94a3b8;">${req.date}</div>
+          <div class="user-item-header">
+            <span>👤 ${req.username}</span>
+            <span style="color: #facc15;">${req.days} Kun</span>
+          </div>
+          <div style="font-size: 0.75rem; color: #cbd5e1;">Sana: ${req.date}</div>
           <div class="user-actions">
-            <button class="btn-small btn-success" onclick="approvePremium('${reqId}', '${req.username}', ${req.days})">Premium Berish ✅</button>
-            <button class="btn-small btn-danger" onclick="rejectPremium('${reqId}', '${req.username}', ${req.stars})">Rad Etish ❌</button>
+            <button class="btn-small btn-success" onclick="approvePremium('${reqId}', '${req.username}', ${req.days})">Tasdiqlash ✅</button>
+            <button class="btn-small btn-danger" onclick="rejectPremium('${reqId}', '${req.username}', ${req.stars})">Rad etish ❌</button>
           </div>
         `;
         container.appendChild(item);
       });
     } catch (e) {
-      document.getElementById('requestsList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Ma'lumotni o'qishda xatolik</p>";
+      document.getElementById('requestsList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik</p>";
     }
   }
 
   async function approvePremium(reqId, username, days) {
     try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        const now = Date.now();
-        const currentSub = (user.subUntil && user.subUntil > now) ? user.subUntil : now;
-        const newSubUntil = currentSub + (days * 24 * 60 * 60 * 1000);
-
-        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSubUntil });
-        await window.remove(window.child(window.dbRef, `requests/${reqId}`));
-        alert(`${username} ga ${days} kunlik Premium berildi!`);
-        renderAdminData();
-      }
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+      const now = Date.now();
+      const addMs = days * 24 * 60 * 60 * 1000;
+      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+      const currentSub = snap.exists() ? Number(snap.val().subUntil || 0) : 0;
+      const newSub = (currentSub > now ? currentSub : now) + addMs;
+      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
+      await window.remove(window.child(window.dbRef, `requests/${reqId}`));
+      alert("Premium tasdiqlandi!");
+      renderRequestsList();
+      renderUsersList();
+    } catch (e) { alert(e.message); }
   }
 
   async function rejectPremium(reqId, username, stars) {
     try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (snapshot.exists()) {
-        const user = snapshot.val();
-        await window.update(window.child(window.dbRef, `users/${username}`), { stars: (user.stars || 0) + stars });
-      }
+      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+      const currentStars = snap.exists() ? Number(snap.val().stars || 0) : 0;
+      await window.update(window.child(window.dbRef, `users/${username}`), { stars: currentStars + stars });
       await window.remove(window.child(window.dbRef, `requests/${reqId}`));
-      alert("Ariza rad etildi va Stars qaytarib berildi!");
-      renderAdminData();
-    } catch (e) {
-      alert("Xato: " + e.message);
-    }
+      alert("Ariza rad etildi!");
+      renderRequestsList();
+    } catch (e) { alert(e.message); }
   }
 
   async function renderUsersList() {
@@ -809,163 +1041,125 @@
       container.innerHTML = "";
 
       if (!snapshot.exists()) {
-        container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Foydalanuvchilar topilmadi</p>";
+        container.innerHTML = "<p style='text-align:center; color:#cbd5e1; font-size:0.8rem;'>Foydalanuvchilar yo'q</p>";
         return;
       }
 
-      const usersObj = snapshot.val();
+      const users = snapshot.val();
       const now = Date.now();
 
-      Object.keys(usersObj).forEach(username => {
-        const user = usersObj[username];
-        let subInfo = "<span style='color:#f87171;'>Obuna yo'q</span>";
-
-        if (user.subUntil && user.subUntil > now) {
-          const diff = user.subUntil - now;
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          subInfo = `<span style='color:#4ade80;'>Qoldi: ${days}k, ${hours}s, ${mins}m</span>`;
+      Object.keys(users).forEach(username => {
+        if (username === 'admin') return; 
+        const u = users[username];
+        const subUntil = Number(u.subUntil || 0);
+        const hasSub = subUntil && subUntil > now;
+        
+        let subText = 'Nofaol ❌';
+        if (hasSub) {
+          const hoursLeft = Math.ceil((subUntil - now) / (1000 * 60 * 60));
+          if (hoursLeft > 48) {
+            const daysLeft = Math.ceil(hoursLeft / 24);
+            subText = `Faol (${daysLeft} kun) ✅`;
+          } else {
+            subText = `Faol (${hoursLeft} soat) ✅`;
+          }
         }
-
-        const userCooldown = user.spinCooldownHours !== undefined ? user.spinCooldownHours : 12;
 
         const item = document.createElement('div');
         item.className = 'user-item';
         item.innerHTML = `
           <div class="user-item-header">
-            <span>${user.name} (@${user.username})</span>
-            <span style="color: #facc15;">⭐ ${user.stars || 0}</span>
+            <span>👤 ${u.name || username} (@${username})</span>
+            <span style="color: ${hasSub ? '#4ade80' : '#f87171'};">${subText}</span>
           </div>
-          <div style="font-size:0.8rem; margin-bottom: 4px;">Obuna: ${subInfo}</div>
-          <div style="font-size:0.8rem; color:#38bdf8; margin-bottom: 6px;">Baraban vaqti: <strong>${userCooldown} soat</strong></div>
+          <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;">
+            Balans: ⭐ ${u.stars || 0} Stars | Parol: ${u.password || '***'}
+          </div>
           <div class="user-actions">
-            <button class="btn-small btn-success" onclick="addSubscription('${user.username}', 5)">+5 kun</button>
-            <button class="btn-small btn-success" onclick="addSubscription('${user.username}', 30)">+30 kun</button>
-            <button class="btn-small btn-warning" onclick="sendAdminStars('${user.username}')">+ Stars</button>
-            <button class="btn-small" style="background:#8b5cf6;" onclick="setUserSpinCooldown('${user.username}')">⏱️ Vaqt</button>
-            <button class="btn-small btn-warning" onclick="resetUserSpinTimer('${user.username}')">🔄 Nol qilish</button>
-            <button class="btn-small btn-secondary" onclick="removeSubscription('${user.username}')">O'chirish</button>
-            <button class="btn-small btn-danger" onclick="deleteUserFromDB('${user.username}')">🗑️</button>
+            <button class="btn-small btn-success" onclick="grantSubDaysCustom('${username}')">+Kun Premium</button>
+            <button class="btn-small btn-warning" onclick="grantSubHours('${username}')">+Soat Premium</button>
+            <button class="btn-small btn-main" onclick="grantStars('${username}')">+Stars ⭐</button>
+            <button class="btn-small btn-danger" onclick="revokeSub('${username}')">Premiumni o'chirish ❌</button>
+            <button class="btn-small btn-danger" style="background: rgba(185, 28, 28, 0.8);" onclick="deleteUser('${username}')">Userni O'chirish 🗑️</button>
           </div>
         `;
         container.appendChild(item);
       });
     } catch (e) {
-      document.getElementById('usersList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Ma'lumotni o'qishda xatolik</p>";
+      document.getElementById('usersList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik berdi</p>";
     }
   }
 
-  async function setUserSpinCooldown(username) {
-    const hours = prompt(`@${username} uchun baraban vaqtini kiriting (soatda):`, "12");
-    if (hours === null) return;
-    const parsedHours = parseFloat(hours);
-    if (isNaN(parsedHours) || parsedHours < 0) return alert("To'g'ri soat kiriting!");
-    await window.update(window.child(window.dbRef, `users/${username}`), { spinCooldownHours: parsedHours });
-    renderAdminData();
-  }
+  async function grantSubHours(username) {
+    const hoursStr = prompt(`@${username} uchun necha SOAT premium bermoqchisiz?`);
+    if (!hoursStr) return;
+    const hours = parseFloat(hoursStr);
+    if (isNaN(hours) || hours <= 0) return alert("Iltimos, to'g'ri son kiriting!");
 
-  async function resetUserSpinTimer(username) {
-    if (!confirm(`@${username} baraban taymerini nolga tushiraylikmi?`)) return;
-    await window.update(window.child(window.dbRef, `users/${username}`), { lastSpinBatchTime: 0, spinsUsed: 0 });
-    renderAdminData();
-  }
-
-  async function sendAdminStars(username) {
-    const amount = prompt(`${username} ga nechta Stars yubormoqchisiz?`);
-    if (!amount || isNaN(amount)) return;
-    const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-    if (snapshot.exists()) {
-      const currentStars = snapshot.val().stars || 0;
-      await window.update(window.child(window.dbRef, `users/${username}`), { stars: currentStars + parseInt(amount) });
-      renderAdminData();
-    }
-  }
-
-  async function addSubscription(username, days) {
-    const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-    if (snapshot.exists()) {
-      const user = snapshot.val();
+    try {
       const now = Date.now();
-      const currentSub = (user.subUntil && user.subUntil > now) ? user.subUntil : now;
-      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: currentSub + (days * 24 * 60 * 60 * 1000) });
-      renderAdminData();
-    }
+      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (!snap.exists()) return;
+      const currentSub = Number(snap.val().subUntil || 0);
+      const newSub = (currentSub > now ? currentSub : now) + (hours * 60 * 60 * 1000);
+      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
+      alert(`@${username} foydalanuvchisiga ${hours} soatlik premium berildi!`);
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
-  async function removeSubscription(username) {
-    await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
-    renderAdminData();
+  async function grantSubDaysCustom(username) {
+    const daysStr = prompt(`@${username} uchun necha KUN premium bermoqchisiz?`);
+    if (!daysStr) return;
+    const days = parseFloat(daysStr);
+    if (isNaN(days) || days <= 0) return alert("Iltimos, to'g'ri son kiriting!");
+
+    try {
+      const now = Date.now();
+      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (!snap.exists()) return;
+      const currentSub = Number(snap.val().subUntil || 0);
+      const newSub = (currentSub > now ? currentSub : now) + (days * 24 * 60 * 60 * 1000);
+      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
+      alert(`@${username} foydalanuvchisiga ${days} kunlik premium berildi!`);
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
-  async function deleteUserFromDB(username) {
-    if (!confirm(`@${username} bazadan o'chirilsinmi?`)) return;
-    await window.remove(window.child(window.dbRef, `users/${username}`));
-    renderAdminData();
+  async function revokeSub(username) {
+    if (!confirm(`Haqiqatan ham @${username} foydalanuvchisining premium obunasini bekor qilmoqchimisiz?`)) return;
+    try {
+      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
+      alert(`@${username} foydalanuvchisining premium obunasi o'chirildi!`);
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
-  function calculateSniper() {
-    const dir = document.getElementById('direction').value;
-    const p = parseFloat(document.getElementById('pPrice').value) || 0;
-    const day = parseFloat(document.getElementById('dayNum').value) || 0;
+  async function grantStars(username) {
+    const starsStr = prompt(`@${username} uchun nechta Stars bermoqchisiz?\n(Ayrish uchun manfiy son kiriting, masalan: -500)`);
+    if (!starsStr) return;
+    const amount = parseInt(starsStr);
+    if (isNaN(amount)) return alert("Iltimos, to'g'ri raqam kiriting!");
 
-    const offset = (day * 10) / 100;
-    let entryPrice1 = dir === 'BUY' ? (p + offset) : (p - offset);
-
-    const pips15Offset = 1.50;  
-    let entryPrice2 = dir === 'BUY' ? (entryPrice1 + pips15Offset) : (entryPrice1 - pips15Offset);
-
-    let tp1 = dir === 'BUY' ? entryPrice1 + 17.07 : entryPrice1 - 17.07;
-    let tp2 = dir === 'BUY' ? entryPrice1 + 34.17 : entryPrice1 - 34.17;
-    let tp3 = dir === 'BUY' ? entryPrice1 + 51.31 : entryPrice1 - 51.31;
-    let tp4 = dir === 'BUY' ? entryPrice1 + 68.47 : entryPrice1 - 68.47;
-
-    document.getElementById('entryTitle').innerText = dir === 'BUY' ? "🎯 SNIPER BUY ZONALAR (KIRISH)" : "🎯 SNIPER SELL ZONALAR (KIRISH)";
-    
-    const colorClass = dir === 'BUY' ? 'val-green' : 'val-red';
-    
-    document.getElementById('entryPrice').innerHTML = `
-      1-Entry: $${entryPrice1.toFixed(2)}<br>
-      2-Entry: <span class="${colorClass}">$${entryPrice2.toFixed(2)}</span>
-    `;
-    document.getElementById('entryPrice').className = `sniper-price ${colorClass}`;
-
-    document.getElementById('tpTableBody').innerHTML = `
-      <tr>
-        <td><strong>TP 1</strong></td>
-        <td class="${colorClass}">$${tp1.toFixed(2)}</td>
-        <td><strong>16:02</strong></td>
-      </tr>
-      <tr>
-        <td><strong>TP 2</strong></td>
-        <td class="${colorClass}">$${tp2.toFixed(2)}</td>
-        <td><strong>16:19</strong></td>
-      </tr>
-      <tr>
-        <td><strong>TP 3</strong></td>
-        <td class="${colorClass}">$${tp3.toFixed(2)}</td>
-        <td><strong>16:36</strong></td>
-      </tr>
-      <tr>
-        <td><strong>TP 4 (Asosiy)</strong></td>
-        <td class="${colorClass}">$${tp4.toFixed(2)}</td>
-        <td><strong>16:53</strong></td>
-      </tr>
-    `;
-
-    document.getElementById('results').style.display = 'block';
+    try {
+      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+      if (!snap.exists()) return;
+      const currentStars = Number(snap.val().stars || 0);
+      const newStars = Math.max(0, currentStars + amount);
+      await window.update(window.child(window.dbRef, `users/${username}`), { stars: newStars });
+      alert(`@${username} balansi yangilandi! Yangi balans: ${newStars} Stars`);
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
   }
 
-  window.onload = function() {
-    if (currentUser) {
-      if (currentUser.role === 'admin') {
-        loadAdminPanel();
-      } else {
-        loadUserPanel();
-      }
-    }
-  };
+  async function deleteUser(username) {
+    if (!confirm(`Haqiqatan ham @${username} foydalanuvchisini bazadan o'chirmoqchimisiz?`)) return;
+    try {
+      await window.remove(window.child(window.dbRef, `users/${username}`));
+      alert("Foydalanuvchi bazadan o'chirildi!");
+      renderUsersList();
+    } catch (e) { alert("Xato: " + e.message); }
+  }
 </script>
-
 </body>
 </html>
