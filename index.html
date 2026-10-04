@@ -192,6 +192,39 @@
     .dir-toggle-btn.buy { background: rgba(34, 197, 94, 0.2); border-color: rgba(34, 197, 94, 0.4); color: #4ade80; }
     .dir-toggle-btn.buy.active { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; }
     .sub-title { font-size: 0.9rem; font-weight: bold; color: #38bdf8; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 6px; }
+
+    /* SCREENSHOT STYLE DROPDOWNS */
+    .menu-accordion-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(15px);
+      padding: 14px 18px;
+      border-radius: 16px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    .menu-accordion-btn:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .menu-accordion-content {
+      display: none;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 12px;
+      backdrop-filter: blur(10px);
+    }
   </style>
 </head>
 <body>
@@ -274,7 +307,7 @@
     <!-- TAB MENU -->
     <div style="display: flex; gap: 6px; margin-bottom: 15px;">
       <button class="compact-btn btn-main" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(1)" id="tab1">🎯 Gann Pro</button>
-      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(2)" id="tab2">📉 Atkat (Fib)</button>
+      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(2)" id="tab2">⚡ News Signal</button>
       <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(3)" id="tab3">🥇 Gold Zone</button>
     </div>
 
@@ -331,32 +364,52 @@
         </div>
       </div>
 
-      <!-- 2-KALKULYATOR: ATKAT (RETRACEMENT) -->
+      <!-- 2-KALKULYATOR: NEWS SIGNAL (FAQAT ADMIN SIGNALARI KELADIGAN QISM) -->
       <div id="calcContent2" style="display: none;">
-        <div class="input-group">
-          <label>Trend Yo'nalishi (Pozitsiya):</label>
-          <select id="atkatTrend">
-            <option value="LONG">O'suvchi Trend (Atkat pastga tushadi - BUY)</option>
-            <option value="SHORT">Kamayuvchi Trend (Atkat tepaga chiqadi - SELL)</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>Maksimum Narx (Max):</label>
-          <input type="number" step="0.0001" id="atkatMax" placeholder="Maksimal narxni kiriting">
-        </div>
-        <div class="input-group">
-          <label>Minimum Narx (Min):</label>
-          <input type="number" step="0.0001" id="atkatMin" placeholder="Minimal narxni kiriting">
-        </div>
-        <button class="btn-sniper" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.7), rgba(168, 85, 247, 0.5));" onclick="calculateAtkat()">Atkat Zonalarni Hisoblash 🎯</button>
+        
+        <!-- ADMIN TOMONIDAN YUBORILGAN GLOBAL NEWS SIGNAL BLOKI -->
+        <div id="activeNewsContainer" style="display: none; margin-bottom: 12px;"></div>
 
-        <div id="atkatResults" style="display: none;">
-          <div class="sniper-result-box" style="background: rgba(139, 92, 246, 0.12); border-color: rgba(139, 92, 246, 0.35);">
-            <div class="sniper-title">🎯 ATKAT ENTRY ZONALAR (FIBONACCI)</div>
-            <div class="sniper-price" id="atkatEntryPrice" style="color: #c4b5fd;">
-            </div>
+        <!-- 1. NEWS SIGNAL DROPDOWN BUTTON -->
+        <button class="menu-accordion-btn" onclick="toggleAccordion('newsSignalPanel')">
+          <span>📢 Admin News Signallari</span>
+          <span>▼</span>
+        </button>
+
+        <!-- NEWS SIGNAL PANEL CONTENT (Faqat Admin e'lon qilgan signallar chiqadi) -->
+        <div id="newsSignalPanel" class="menu-accordion-content" style="display: block;">
+          <div id="userNewsSignalsList" style="font-size: 0.9rem; color: #cbd5e1; text-align: center;">
+            Hozircha yangi News signallari mavjud emas. Admin signal berganda shu yerda ko'rinadi.
           </div>
         </div>
+
+        <!-- 2. NEWS SIGNAL CHATI DROPDOWN BUTTON -->
+        <button class="menu-accordion-btn" onclick="toggleAccordion('newsChatPanel')">
+          <span>💬 News Signal Chati</span>
+          <span>▼</span>
+        </button>
+
+        <!-- NEWS SIGNAL CHATI PANEL CONTENT -->
+        <div id="newsChatPanel" class="menu-accordion-content">
+          <p style="font-size: 0.85rem; color: #cbd5e1; text-align: center; margin-top:0; margin-bottom: 12px;">
+            Yangiliklar muhokamasi va signallar almashinish guruhi:
+          </p>
+          <a href="https://t.me/+NhsFLvWwboRiZmYy" target="_blank" style="text-decoration: none;">
+            <button class="btn-success compact-btn" style="width: 100%;">Telegram Chatga o'tish 🚀</button>
+          </a>
+        </div>
+
+        <!-- 3. NEWS SAVDO QOIDALARI & RISK -->
+        <div class="box" style="border-color: rgba(245, 158, 11, 0.4); margin-top: 15px;">
+          <div style="font-size: 0.95rem; font-weight: bold; color: #facc15; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span>⚠️</span> News Savdo Qoidalari & Risk
+          </div>
+          <div style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
+            <p style="margin: 6px 0;">• <b>Risk:</b> Yangilik vaqtida spred kengayishi mumkin, depozitning 1-2% dan ko'p qismini qo'ymang.</p>
+            <p style="margin: 6px 0;">• <b>Yechish:</b> Impuls (spike) berishi bilan daromadni darhol qo'lda (manual) yechib oling!</p>
+          </div>
+        </div>
+
       </div>
 
       <!-- 3-KALKULYATOR: GOLD ZONE ENGINE & RAZVAROT -->
@@ -404,7 +457,7 @@
 
           <div id="razvarotResultBox" style="display: none; margin-top: 12px;">
             <div class="sniper-result-box" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.35);">
-              <div class="sniper-title" style="color:#facc15;">⏱️ TAXMINIY RAZVAROT VAQTLARI</div>
+              <div class="sniper-title" style="color:#facc15;">⏱ TAXMINIY RAZVAROT VAQTLARI</div>
               <div class="sniper-price" id="razvarotResultDisplay" style="color:#fde047; font-size:0.9rem; line-height:1.5;"></div>
             </div>
           </div>
@@ -471,7 +524,7 @@
       <div class="row"><span>30 Kunlik Premium</span><span>30,000 Stars</span></div>
       <button class="btn-small btn-warning" style="width: 100%; margin-top: 6px;" onclick="applyForPremium(30, 30000)">Sotib olish</button>
     </div>
-    <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅️ Orqaga qaytish</button>
+    <button class="btn-secondary compact-btn" onclick="showCard('calcCard')">⬅ Orqaga qaytish</button>
   </div>
 
   <!-- ADMIN PANEL EKRANI -->
@@ -479,6 +532,35 @@
     <div class="user-header">
       <div><strong>👑 ADMIN PANEL</strong></div>
       <button class="btn-small btn-danger" onclick="logout()">Chiqish</button>
+    </div>
+
+    <h3>📢 News Panel (Yangi Signal E'lon Qilish)</h3>
+    <div class="box" style="margin-bottom: 15px; border-color: rgba(234, 179, 8, 0.4);">
+      <div class="input-group">
+        <label>Yangilik Nomi / Mavzusi:</label>
+        <input type="text" id="adminNewsTitle" placeholder="Masalan: US CPI / NFP Data">
+      </div>
+      <div class="input-group">
+        <label>Yo'nalish:</label>
+        <select id="adminNewsDirection">
+          <option value="BUY">BUY (Yuqoriga)</option>
+          <option value="SELL">SELL (Pastga)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Asosiy Narx (Base Price):</label>
+        <input type="number" step="0.01" id="adminNewsBasePrice" placeholder="Masalan: 2650.50">
+      </div>
+      <div class="input-group">
+        <label>Qo'shimcha ma'lumot / Target zonalar:</label>
+        <input type="text" id="adminNewsExtra" placeholder="Masalan: 1-Entry: 2648, TP: 2660">
+      </div>
+      <div class="input-group">
+        <label>Yangilik Sanasi va Vaqti:</label>
+        <input type="datetime-local" id="adminNewsDateTime" style="color-scheme: dark;">
+      </div>
+      <button class="btn-small btn-success" style="width: 100%; margin-top: 6px; background: linear-gradient(135deg, rgba(234, 179, 8, 0.7), rgba(202, 138, 4, 0.5));" onclick="publishNewsSignal()">News Signalni E'lon Qilish 🚀</button>
+      <button class="btn-small btn-danger" style="width: 100%; margin-top: 6px;" onclick="removeNewsSignal()">Faol Newsni O'chirish ❌</button>
     </div>
 
     <h3>🎡 Umumiy Baraban Vaqtini Sozlash</h3>
@@ -517,869 +599,958 @@
     <div id="usersList">Yuklanmoqda...</div>
   </div>
 
-<script>
-  let currentUser = JSON.parse(localStorage.getItem('ot_fb_user')) || null;
-  let timerInterval = null;
-  let currentWheelRotation = 0;
-  let previousRequestsCount = 0;
-  let globalWheelCooldownHours = 12;
-  let selectedGoldDirection = 'SELL';
+  <!-- JAVASCRIPT QISMI -->
+  <script>
+    let currentUser = JSON.parse(localStorage.getItem('ot_fb_user')) || null;
+    let timerInterval = null;
+    let currentWheelRotation = 0;
+    let previousRequestsCount = 0;
+    let globalWheelCooldownHours = 12;
+    let selectedGoldDirection = 'SELL';
 
-  function showCard(cardId) {
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-    document.getElementById(cardId).classList.add('active');
-  }
+    function showCard(cardId) {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+      document.getElementById(cardId).classList.add('active');
+    }
 
-  function switchTab(tabNum) {
-    document.getElementById('calcContent1').style.display = 'none';
-    document.getElementById('calcContent2').style.display = 'none';
-    document.getElementById('calcContent3').style.display = 'none';
+    function switchTab(tabNum) {
+      document.getElementById('calcContent1').style.display = 'none';
+      document.getElementById('calcContent2').style.display = 'none';
+      document.getElementById('calcContent3').style.display = 'none';
 
-    document.getElementById('tab1').className = 'compact-btn btn-secondary';
-    document.getElementById('tab2').className = 'compact-btn btn-secondary';
-    document.getElementById('tab3').className = 'compact-btn btn-secondary';
+      document.getElementById('tab1').className = 'compact-btn btn-secondary';
+      document.getElementById('tab2').className = 'compact-btn btn-secondary';
+      document.getElementById('tab3').className = 'compact-btn btn-secondary';
 
-    document.getElementById(`calcContent${tabNum}`).style.display = 'block';
-    document.getElementById(`tab${tabNum}`).className = 'compact-btn btn-main';
-  }
+      document.getElementById(`calcContent${tabNum}`).style.display = 'block';
+      document.getElementById(`tab${tabNum}`).className = 'compact-btn btn-main';
+    }
 
-  function openPromoModal() { document.getElementById('promoModalBox').style.display = 'block'; }
-  function closePromoModal() { document.getElementById('promoModalBox').style.display = 'none'; }
-
-  window.onload = function() {
-    if (currentUser) {
-      if (currentUser.role === 'admin') {
-        loadAdminPanel();
+    function toggleAccordion(panelId) {
+      const panel = document.getElementById(panelId);
+      if (panel.style.display === 'block') {
+        panel.style.display = 'none';
       } else {
-        loadUserPanel();
+        panel.style.display = 'block';
       }
     }
-  };
 
-  async function register() {
-    const name = document.getElementById('regName').value.trim();
-    const username = document.getElementById('regUser').value.trim().toLowerCase();
-    const password = document.getElementById('regPass').value.trim();
+    function openPromoModal() { document.getElementById('promoModalBox').style.display = 'block'; }
+    function closePromoModal() { document.getElementById('promoModalBox').style.display = 'none'; }
 
-    if (!name || !username || !password) {
-      alert("Barcha maydonlarni to'ldiring!");
-      return;
-    }
-
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (snapshot.exists()) {
-        alert("Bu login band!");
-        return;
-      }
-
-      const userData = {
-        name: name,
-        username: username,
-        password: password,
-        subUntil: 0,
-        stars: 0,
-        lastSpinBatchTime: 0,
-        spinsUsed: 0,
-        totalSpins: 0,
-        customCooldownHours: null,
-        redeemedPromos: {}
-      };
-
-      await window.set(window.child(window.dbRef, `users/${username}`), userData);
-      alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
-      showCard('loginCard');
-    } catch (e) {
-      alert("Xatolik yuz berdi: " + e.message);
-    }
-  }
-
-  async function login() {
-    const username = document.getElementById('loginUser').value.trim().toLowerCase();
-    const password = document.getElementById('loginPass').value.trim();
-    const cleanPass = password.replace(/\s+/g, '');
-
-    if (username === 'admin' && cleanPass === '888888343') {
-      currentUser = { username: 'admin', role: 'admin' };
-      localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
-      loadAdminPanel();
-      return;
-    }
-
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (snapshot.exists() && snapshot.val().password === password) {
-        currentUser = snapshot.val();
-        localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
-        loadUserPanel();
-      } else {
-        alert("Login yoki parol xato!");
-      }
-    } catch (e) {
-      alert("Xatolik: " + e.message);
-    }
-  }
-
-  function logout() {
-    currentUser = null;
-    localStorage.removeItem('ot_fb_user');
-    if (timerInterval) clearInterval(timerInterval);
-    showCard('loginCard');
-  }
-
-  async function loadUserPanel() {
-    showCard('calcCard');
-    document.getElementById('displayUsername').innerText = currentUser.name || currentUser.username;
-    
-    try {
-      const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
-      if (cooldownSnap.exists()) globalWheelCooldownHours = Number(cooldownSnap.val());
-    } catch(e){}
-
-    await fetchFreshUserData();
-
-    if (timerInterval) clearInterval(timerInterval);
-    updateTimerDisplay(); 
-    timerInterval = setInterval(updateTimerDisplay, 1000);
-  }
-
-  async function fetchFreshUserData() {
-    if (!currentUser || !currentUser.username) return;
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `users/${currentUser.username}`));
-      if (snapshot.exists()) {
-        currentUser = snapshot.val();
-        localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
-        document.getElementById('walletStars').innerText = `⭐ ${currentUser.stars || 0} Stars`;
-      }
-    } catch (e) { console.log("DB update error:", e); }
-  }
-
-  function updateTimerDisplay() {
-    if (!currentUser) return;
-
-    const now = Date.now();
-    let subUntil = Number(currentUser.subUntil || 0);
-
-    if (subUntil > 0 && subUntil < 10000000000) { subUntil = subUntil * 1000; }
-
-    const badge = document.getElementById('subStatusBadge');
-    const timeLeft = document.getElementById('subTimeLeft');
-    const calcContentContainer = document.getElementById('calcContentContainer');
-    const blockedMsg = document.getElementById('blockedMessage');
-
-    const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
-      ? Number(currentUser.customCooldownHours)
-      : globalWheelCooldownHours;
-
-    const lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
-    let spinsUsed = Number(currentUser.spinsUsed || 0);
-    const cooldownMs = userCooldownHours * 60 * 60 * 1000;
-
-    if (now - lastBatchTime >= cooldownMs) { spinsUsed = 0; }
-    const remainingSpins = Math.max(0, 3 - spinsUsed);
-    const spinBtn = document.getElementById('spinBtn');
-
-    if (spinBtn) {
-      if (remainingSpins > 0) {
-        document.getElementById('wheelSpinsText').innerText = `Imkoniyat: ${remainingSpins} / 3 marta`;
-        spinBtn.disabled = false;
-      } else {
-        const waitDiff = cooldownMs - (now - lastBatchTime);
-        if (waitDiff <= 0) {
-          currentUser.spinsUsed = 0;
-          document.getElementById('wheelSpinsText').innerText = `Imkoniyat: 3 / 3 marta`;
-          spinBtn.disabled = false;
+    window.onload = function() {
+      if (currentUser) {
+        if (currentUser.role === 'admin') {
+          loadAdminPanel();
         } else {
-          const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
-          const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
-          const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
-          const hStr = String(wHours).padStart(2, '0');
-          const mStr = String(wMins).padStart(2, '0');
-          const sStr = String(wSecs).padStart(2, '0');
-          document.getElementById('wheelSpinsText').innerText = `Qayta aylantirish: ${hStr}:${mStr}:${sStr} dan keyin`;
-          spinBtn.disabled = true;
+          loadUserPanel();
         }
       }
-    }
+    };
 
-    if (subUntil && subUntil > now) {
-      const diff = subUntil - now;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+    async function register() {
+      const name = document.getElementById('regName').value.trim();
+      const username = document.getElementById('regUser').value.trim().toLowerCase();
+      const password = document.getElementById('regPass').value.trim();
 
-      const hStr = String(hours).padStart(2, '0');
-      const mStr = String(mins).padStart(2, '0');
-      const sStr = String(secs).padStart(2, '0');
-
-      badge.innerText = "PREMIUM 👑";
-      badge.className = "status-badge status-active";
-      timeLeft.innerHTML = `⏱️ Qoldi: <b style="color:#4ade80; font-size:0.9rem;">${days} kun, ${hStr}:${mStr}:${sStr}</b>`;
-      
-      calcContentContainer.style.display = "block";
-      blockedMsg.style.display = "none";
-    } else {
-      badge.innerText = "NOFAOL ❌";
-      badge.className = "status-badge status-expired";
-      timeLeft.innerHTML = `⏱️ <span style="color:#f87171; font-weight:bold;">Obuna vaqti tugagan</span>`;
-      
-      calcContentContainer.style.display = "none";
-      blockedMsg.style.display = "block";
-    }
-  }
-
-  async function processPromoActivation(rawCode) {
-    if (!rawCode) { alert("Iltimos, promokodni kiriting!"); return; }
-    const promoCode = rawCode.toLowerCase();
-
-    try {
-      if (currentUser.redeemedPromos && currentUser.redeemedPromos[promoCode]) {
-        alert("Siz bu promokodni oldin ishlatgansiz!");
+      if (!name || !username || !password) {
+        alert("Barcha maydonlarni to'ldiring!");
         return;
       }
 
-      const promoSnapshot = await window.get(window.child(window.dbRef, `promocodes/${promoCode}`));
-      if (!promoSnapshot.exists()) {
-        alert("Bunday promokod mavjud emas!");
+      try {
+        const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+        if (snapshot.exists()) {
+          alert("Bu login band!");
+          return;
+        }
+
+        const userData = {
+          name: name,
+          username: username,
+          password: password,
+          subUntil: 0,
+          stars: 0,
+          lastSpinBatchTime: 0,
+          spinsUsed: 0,
+          totalSpins: 0,
+          customCooldownHours: null,
+          redeemedPromos: {}
+        };
+
+        await window.set(window.child(window.dbRef, `users/${username}`), userData);
+        alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+        showCard('loginCard');
+      } catch (e) {
+        alert("Xatolik yuz berdi: " + e.message);
+      }
+    }
+
+    async function login() {
+      const username = document.getElementById('loginUser').value.trim().toLowerCase();
+      const password = document.getElementById('loginPass').value.trim();
+      const cleanPass = password.replace(/\s+/g, '');
+
+      if (username === 'admin' && cleanPass === '888888343') {
+        currentUser = { username: 'admin', role: 'admin' };
+        localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
+        loadAdminPanel();
         return;
       }
 
-      const promoData = promoSnapshot.val();
-      const now = Date.now();
-
-      if (promoData.expiresAt && now > promoData.expiresAt) {
-        alert("Kechirasiz, bu promokodning amal qilish muddati tugagan! ⌛");
-        return;
+      try {
+        const snapshot = await window.get(window.child(window.dbRef, `users/${username}`));
+        if (snapshot.exists() && snapshot.val().password === password) {
+          currentUser = snapshot.val();
+          localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
+          loadUserPanel();
+        } else {
+          alert("Login yoki parol xato!");
+        }
+      } catch (e) {
+        alert("Xatolik: " + e.message);
       }
-
-      const currentStars = Number(currentUser.stars || 0);
-      const addedStars = Number(promoData.stars);
-
-      if (!currentUser.redeemedPromos) { currentUser.redeemedPromos = {}; }
-      currentUser.redeemedPromos[promoCode] = true;
-
-      await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
-        stars: currentStars + addedStars,
-        redeemedPromos: currentUser.redeemedPromos
-      });
-
-      document.getElementById('mainPromoInput').value = "";
-      closePromoModal();
-      alert(`Tabriklaymiz! Balansingizga +${addedStars} Stars qo'shildi! 🎉`);
-      await fetchFreshUserData();
-      updateTimerDisplay();
-    } catch (e) { alert("Xatolik yuz berdi: " + e.message); }
-  }
-
-  function redeemMainPromoCode() {
-    const code = document.getElementById('mainPromoInput').value.trim();
-    processPromoActivation(code);
-  }
-
-  async function spinWheel() {
-    const now = Date.now();
-
-    const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
-      ? Number(currentUser.customCooldownHours)
-      : globalWheelCooldownHours;
-
-    let lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
-    let spinsUsed = Number(currentUser.spinsUsed || 0);
-    const cooldownMs = userCooldownHours * 60 * 60 * 1000;
-
-    if (now - lastBatchTime >= cooldownMs) {
-      spinsUsed = 0;
-      lastBatchTime = now;
     }
 
-    if (spinsUsed >= 3) {
-      alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${userCooldownHours} soatdan keyin qayta urinib ko'ring.`);
-      return;
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem('ot_fb_user');
+      if (timerInterval) clearInterval(timerInterval);
+      showCard('loginCard');
     }
 
-    spinsUsed++;
-    let totalSpins = Number(currentUser.totalSpins || 0) + 1;
-    let wonStars = (totalSpins % 30 === 15 || totalSpins % 30 === 0) ? 30 : (Math.floor(Math.random() * 21) + 5);
-
-    document.getElementById('spinBtn').disabled = true;
-    currentWheelRotation += 1440 + Math.floor(Math.random() * 360);
-    document.getElementById('wheel').style.transform = `rotate(${currentWheelRotation}deg)`;
-
-    setTimeout(async () => {
-      const newStars = Number(currentUser.stars || 0) + wonStars;
-      await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
-        stars: newStars,
-        lastSpinBatchTime: lastBatchTime,
-        spinsUsed: spinsUsed,
-        totalSpins: totalSpins
-      });
-      alert(`Tabriklaymiz! Siz ${wonStars} ta Stars yutib oldingiz! 🎉`);
-      await fetchFreshUserData();
-      updateTimerDisplay();
-    }, 4000);
-  }
-
-  async function applyForPremium(days, requiredStars) {
-    const currentStars = Number(currentUser.stars || 0);
-    if (currentStars < requiredStars) {
-      alert("Balansda stars yetarli emas!");
-      return;
-    }
-
-    try {
-      await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
-        stars: currentStars - requiredStars
-      });
-
-      const reqId = Date.now();
-      const reqData = {
-        username: currentUser.username,
-        name: currentUser.name || currentUser.username,
-        days: days,
-        stars: requiredStars,
-        date: new Date().toLocaleString()
-      };
-
-      await window.set(window.child(window.dbRef, `requests/${reqId}`), reqData);
-      alert("Ariza yuborildi! Admin tez orada Premium beradi.");
+    async function loadUserPanel() {
       showCard('calcCard');
+      document.getElementById('displayUsername').innerText = currentUser.name || currentUser.username;
+      
+      try {
+        const cooldownSnap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
+        if (cooldownSnap.exists()) globalWheelCooldownHours = Number(cooldownSnap.val());
+      } catch(e){}
+
       await fetchFreshUserData();
-      updateTimerDisplay();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
 
-  function addTimeStep(timeStr, multiplier = 1) {
-    if (!timeStr) return "00:00";
-    let parts = timeStr.split(":");
-    let hours = parseInt(parts[0], 10) || 0;
-    let minutes = parseInt(parts[1], 10) || 0;
-
-    let tens = Math.floor(minutes / 10);
-    let units = minutes % 10;
-    let sumDigits = tens + units;
-    
-    let totalAdd = (sumDigits === 0 ? 5 : sumDigits) * multiplier;
-    let newMinutes = minutes + totalAdd;
-    
-    hours = (hours + Math.floor(newMinutes / 60)) % 24;
-    newMinutes = newMinutes % 60;
-
-    let hStr = String(hours).padStart(2, '0');
-    let mStr = String(newMinutes).padStart(2, '0');
-
-    return `${hStr}:${mStr}`;
-  }
-
-  function calculateSniper() {
-    const p = parseFloat(document.getElementById('pPrice').value);
-    const dir = document.getElementById('direction').value;
-    const timeVal = document.getElementById('timeInput').value;
-
-    if (isNaN(p)) {
-      alert("Iltimos, narxni to'g'ri kiriting!");
-      return;
+      if (timerInterval) clearInterval(timerInterval);
+      updateTimerDisplay(); 
+      timerInterval = setInterval(updateTimerDisplay, 1000);
     }
 
-    let e1, e2;
-    if (dir === 'BUY') {
-        e1 = p * 1.0005; e2 = p * 0.9995;
-    } else {
-        e1 = p * 0.9995; e2 = p * 1.0005;
-    }
-
-    const tp1Time = addTimeStep(timeVal, 1);
-    const tp2Time = addTimeStep(timeVal, 2);
-
-    document.getElementById('entryTitle').innerText = dir === 'BUY' ? '🎯 SNIPER BUY ZONALAR (KIRISH)' : '🎯 SNIPER SELL ZONALAR (KIRISH)';
-    document.getElementById('entryPrice').innerHTML = `1-Entry: $${e1.toFixed(3)}<br>2-Entry: $${e2.toFixed(3)}`;
-    
-    document.getElementById('tpTableBody').innerHTML = `
-      <tr><td>TP 1 (Intraday)</td><td class="val-green">$${(p * (dir === 'BUY' ? 1.002 : 0.998)).toFixed(3)}</td><td>${tp1Time}</td></tr>
-      <tr><td>TP 2 (Swing)</td><td class="val-green">$${(p * (dir === 'BUY' ? 1.005 : 0.995)).toFixed(3)}</td><td>${tp2Time}</td></tr>
-    `;
-    document.getElementById('results').style.display = 'block';
-  }
-
-  function calculateAtkat() {
-    const maxP = parseFloat(document.getElementById('atkatMax').value);
-    const minP = parseFloat(document.getElementById('atkatMin').value);
-    const trend = document.getElementById('atkatTrend').value;
-
-    if(isNaN(maxP) || isNaN(minP) || maxP <= minP) {
-      alert("Narxlarni to'g'ri kiriting (Max kattaroq bo'lishi kerak)!");
-      return;
-    }
-
-    const diff = maxP - minP;
-    let entry1, entry2;
-
-    if(trend === "LONG") {
-      entry1 = maxP - (diff * 0.50);
-      entry2 = maxP - (diff * 0.618);
-    } else {
-      entry1 = minP + (diff * 0.50);
-      entry2 = minP + (diff * 0.618);
-    }
-
-    document.getElementById('atkatEntryPrice').innerHTML = `
-      1-Entry ZONA (50.0%): <b>${entry1.toFixed(5)}</b><br>
-      2-Entry ZONA (61.8%): <b>${entry2.toFixed(5)}</b>
-    `;
-    document.getElementById('atkatResults').style.display = 'block';
-  }
-
-  function setGoldDirection(dir) {
-    selectedGoldDirection = dir;
-    if (dir === 'SELL') {
-      document.getElementById('goldSellBtn').classList.add('active');
-      document.getElementById('goldBuyBtn').classList.remove('active');
-    } else {
-      document.getElementById('goldBuyBtn').classList.add('active');
-      document.getElementById('goldSellBtn').classList.remove('active');
-    }
-  }
-
-  function calculateGoldZones() {
-    const maxVal = parseFloat(document.getElementById('goldMax').value);
-    const minVal = parseFloat(document.getElementById('goldMin').value);
-
-    if (isNaN(maxVal) || isNaN(minVal) || maxVal <= minVal) {
-      alert("Iltimos, Max va Min narxlarni to'g'ri kiriting!");
-      return;
-    }
-
-    const diff = maxVal - minVal;
-    let z1, z2, target;
-
-    if (selectedGoldDirection === 'SELL') {
-      z1 = minVal + (diff * 0.618);
-      z2 = minVal + (diff * 0.786);
-      target = minVal - (diff * 0.27);
-    } else {
-      z1 = maxVal - (diff * 0.618);
-      z2 = maxVal - (diff * 0.786);
-      target = maxVal + (diff * 0.27);
-    }
-
-    /* 61.8% va 78.6% yozuvlari olib tashlandi */
-    document.getElementById('goldResultDisplay').innerHTML = `
-      Yo'nalish: <b>${selectedGoldDirection}</b><br>
-      1-ZONA: <b>$${z1.toFixed(2)}</b><br>
-      2-ZONA: <b>$${z2.toFixed(2)}</b><br>
-      Target (TP): <b>$${target.toFixed(2)}</b>
-    `;
-    document.getElementById('goldResultBox').style.display = 'block';
-  }
-
-  function calculateRazvarotTime() {
-    const timeVal = document.getElementById('razvarotTimeInput').value;
-    if (!timeVal) {
-      alert("Iltimos, vaqtni kiriting!");
-      return;
-    }
-
-    const time1 = addTimeStep(timeVal, 1);
-    const time2 = addTimeStep(timeVal, 2);
-
-    const timeText = `1-Oyna: ${time1} (Toshkent v.)<br>2-Oyna: ${time2} (Toshkent v.)`;
-
-    document.getElementById('razvarotResultDisplay').innerHTML = timeText;
-    document.getElementById('razvarotResultBox').style.display = 'block';
-  }
-
-  function loadAdminPanel() {
-    showCard('adminCard');
-    loadGlobalWheelCooldown();
-    renderAdminData();
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(renderAdminData, 4000);
-  }
-
-  async function loadGlobalWheelCooldown() {
-    try {
-      const snap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
-      if (snap.exists()) {
-        globalWheelCooldownHours = Number(snap.val());
-        document.getElementById('adminWheelCooldownInput').value = globalWheelCooldownHours;
-      } else {
-        document.getElementById('adminWheelCooldownInput').value = 12;
-      }
-    } catch(e) {}
-  }
-
-  async function updateGlobalWheelCooldown() {
-    const hours = parseFloat(document.getElementById('adminWheelCooldownInput').value);
-    if (isNaN(hours) || hours < 0) {
-      alert("Iltimos, soatni to'g'ri kiriting!");
-      return;
-    }
-
-    try {
-      await window.set(window.child(window.dbRef, 'settings/wheelCooldownHours'), hours);
-      globalWheelCooldownHours = hours;
-      alert(`Barcha uchun standart baraban kutish vaqti ${hours} soatga o'zgartirildi!`);
-    } catch (e) { alert("Xato: " + e.message); }
-  }
-
-  async function renderAdminData() {
-    renderAdminPromos();
-    renderRequestsList();
-    renderUsersList();
-  }
-
-  async function createNewPromoCode() {
-    const rawCode = document.getElementById('adminPromoCode').value.trim();
-    const starsVal = parseInt(document.getElementById('adminPromoStars').value);
-    const expireInput = document.getElementById('adminPromoExpire').value;
-
-    if (!rawCode || isNaN(starsVal) || !expireInput) {
-      alert("Barcha maydonlarni va tugash vaqtini to'g'ri to'ldiring!");
-      return;
-    }
-
-    const promoCode = rawCode.toLowerCase();
-    const expireTimestamp = new Date(expireInput).getTime();
-
-    try {
-      await window.set(window.child(window.dbRef, `promocodes/${promoCode}`), {
-        code: promoCode,
-        stars: starsVal,
-        expiresAt: expireTimestamp
-      });
-
-      document.getElementById('adminPromoCode').value = "";
-      document.getElementById('adminPromoExpire').value = "";
-      alert(`"${promoCode}" promokodi yaratildi!`);
-      renderAdminPromos();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
-
-  async function renderAdminPromos() {
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `promocodes`));
-      const container = document.getElementById('promoListContainer');
-      container.innerHTML = "";
-
-      if (!snapshot.exists()) {
-        container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Faol promokodlar yo'q</p>";
-        return;
-      }
-
-      const promos = snapshot.val();
-      const now = Date.now();
-
-      Object.keys(promos).forEach(codeKey => {
-        const promo = promos[codeKey];
-        const isExpired = promo.expiresAt && now > promo.expiresAt;
-        const expireDateStr = promo.expiresAt ? new Date(promo.expiresAt).toLocaleString() : 'Cheksiz';
-
-        const item = document.createElement('div');
-        item.className = 'user-item';
-        item.style.borderColor = isExpired ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255,255,255,0.12)';
-        item.innerHTML = `
-          <div class="user-item-header">
-            <span style="color: #38bdf8; text-transform: uppercase;">🎁 ${promo.code}</span>
-            <span style="color: #facc15;">+${promo.stars} Stars</span>
-          </div>
-          <div style="font-size: 0.75rem; color: ${isExpired ? '#fca5a5' : '#cbd5e1'}; margin-bottom: 4px;">
-            Muddati: ${expireDateStr} ${isExpired ? '(Tugagan ❌)' : ''}
-          </div>
-          <div class="user-actions">
-            <button class="btn-small btn-danger" onclick="deletePromoCode('${promo.code}')">O'chirish 🗑️</button>
-          </div>
-        `;
-        container.appendChild(item);
-      });
-    } catch (e) {
-      document.getElementById('promoListContainer').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik</p>";
-    }
-  }
-
-  async function deletePromoCode(code) {
-    if (!confirm(`Haqiqatan ham "${code}" promokodini o'chirmoqchimisiz?`)) return;
-    try {
-      await window.remove(window.child(window.dbRef, `promocodes/${code}`));
-      alert("Promokod o'chirildi!");
-      renderAdminPromos();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
-
-  async function renderRequestsList() {
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `requests`));
-      const container = document.getElementById('requestsList');
-      const badge = document.getElementById('reqBadge');
-      container.innerHTML = "";
-
-      if (!snapshot.exists()) {
-        container.innerHTML = "<p style='text-align:center; color:#cbd5e1; font-size:0.8rem;'>Arizalar mavjud emas</p>";
-        badge.style.display = 'none';
-        previousRequestsCount = 0;
-        return;
-      }
-
-      const requests = snapshot.val();
-      const reqKeys = Object.keys(requests);
-      const currentCount = reqKeys.length;
-
-      if (currentCount > previousRequestsCount && previousRequestsCount !== 0) {
-        alert("📩 Yangi Premium so'rovi tushdi!");
-      }
-      previousRequestsCount = currentCount;
-      badge.innerText = currentCount;
-      badge.style.display = 'inline-block';
-
-      reqKeys.forEach(reqId => {
-        const req = requests[reqId];
-        const item = document.createElement('div');
-        item.className = 'user-item';
-        
-        item.innerHTML = `
-          <div class="user-item-header">
-            <span>👤 ${req.username}</span>
-            <span style="color: #facc15;">${req.days} Kun</span>
-          </div>
-          <div style="font-size: 0.75rem; color: #cbd5e1;">Sana: ${req.date}</div>
-          <div class="user-actions">
-            <button class="btn-small btn-success" onclick="approvePremium('${reqId}', '${req.username}', ${req.days})">Tasdiqlash ✅</button>
-            <button class="btn-small btn-danger" onclick="rejectPremium('${reqId}', '${req.username}', ${req.stars})">Rad etish ❌</button>
-          </div>
-        `;
-        container.appendChild(item);
-      });
-    } catch (e) {
-      document.getElementById('requestsList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik</p>";
-    }
-  }
-
-  async function approvePremium(reqId, username, days) {
-    try {
-      const now = Date.now();
-      const addMs = days * 24 * 60 * 60 * 1000;
-      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
-      const currentSub = snap.exists() ? Number(snap.val().subUntil || 0) : 0;
-      const newSub = (currentSub > now ? currentSub : now) + addMs;
-      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
-      await window.remove(window.child(window.dbRef, `requests/${reqId}`));
-      alert("Premium tasdiqlandi!");
-      renderRequestsList();
-      renderUsersList();
-    } catch (e) { alert(e.message); }
-  }
-
-  async function rejectPremium(reqId, username, stars) {
-    try {
-      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
-      const currentStars = snap.exists() ? Number(snap.val().stars || 0) : 0;
-      await window.update(window.child(window.dbRef, `users/${username}`), { stars: currentStars + stars });
-      await window.remove(window.child(window.dbRef, `requests/${reqId}`));
-      alert("Ariza rad etildi!");
-      renderRequestsList();
-    } catch (e) { alert(e.message); }
-  }
-
-  async function renderUsersList() {
-    try {
-      const snapshot = await window.get(window.child(window.dbRef, `users`));
-      const container = document.getElementById('usersList');
-      container.innerHTML = "";
-
-      if (!snapshot.exists()) {
-        container.innerHTML = "<p style='text-align:center; color:#cbd5e1; font-size:0.8rem;'>Foydalanuvchilar yo'q</p>";
-        return;
-      }
-
-      const users = snapshot.val();
-      const now = Date.now();
-
-      Object.keys(users).forEach(username => {
-        if (username === 'admin') return; 
-        const u = users[username];
-        const subUntil = Number(u.subUntil || 0);
-        const hasSub = subUntil && subUntil > now;
-        
-        let subText = 'Nofaol ❌';
-        if (hasSub) {
-          const hoursLeft = Math.ceil((subUntil - now) / (1000 * 60 * 60));
-          if (hoursLeft > 48) {
-            const daysLeft = Math.ceil(hoursLeft / 24);
-            subText = `Faol (${daysLeft} kun) ✅`;
-          } else {
-            subText = `Faol (${hoursLeft} soat) ✅`;
-          }
+    async function fetchFreshUserData() {
+      if (!currentUser || !currentUser.username) return;
+      try {
+        const snapshot = await window.get(window.child(window.dbRef, `users/${currentUser.username}`));
+        if (snapshot.exists()) {
+          currentUser = snapshot.val();
+          localStorage.setItem('ot_fb_user', JSON.stringify(currentUser));
+          document.getElementById('walletStars').innerText = `⭐ ${currentUser.stars || 0} Stars`;
         }
-
-        const userCooldownHours = (u.customCooldownHours !== undefined && u.customCooldownHours !== null) 
-          ? Number(u.customCooldownHours) 
-          : globalWheelCooldownHours;
-
-        const userLastSpinBatch = Number(u.lastSpinBatchTime || 0);
-        const userSpinsUsed = Number(u.spinsUsed || 0);
-        const cooldownMs = userCooldownHours * 60 * 60 * 1000;
-        const isWheelLocked = (userSpinsUsed >= 3) && (now - userLastSpinBatch < cooldownMs);
-
-        let wheelStatusStr = "✅ Tayyor";
-        if (isWheelLocked) {
-          const diffMs = cooldownMs - (now - userLastSpinBatch);
-          const remainH = (diffMs / (1000 * 60 * 60)).toFixed(1);
-          wheelStatusStr = `🔒 ${remainH} soat qoldi`;
-        }
-
-        const item = document.createElement('div');
-        item.className = 'user-item';
-        item.innerHTML = `
-          <div class="user-item-header">
-            <span>👤 ${u.name || username} (@${username})</span>
-            <span style="color: ${hasSub ? '#4ade80' : '#f87171'};">${subText}</span>
-          </div>
-          <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;">
-            Balans: ⭐ ${u.stars || 0} Stars | Baraban: <b>${wheelStatusStr}</b> <span style="color:#38bdf8;">(Interval: ${userCooldownHours}h)</span>
-          </div>
-          <div class="user-actions">
-            <button class="btn-small btn-warning" onclick="setUserWheelInterval('${username}')">⏱️ Baraban Soati</button>
-            <button class="btn-small btn-main" onclick="setUserWheelDelay('${username}')">⏳ Kutish Soati</button>
-            <button class="btn-small btn-success" onclick="grantSubDaysCustom('${username}')">+Kun Premium</button>
-            <button class="btn-small btn-warning" onclick="grantSubHours('${username}')">+Soat Premium</button>
-            <button class="btn-small btn-main" onclick="grantStars('${username}')">+Stars ⭐</button>
-            <button class="btn-small btn-danger" onclick="revokeSub('${username}')">Premiumni o'chirish ❌</button>
-            <button class="btn-small btn-danger" style="background: rgba(185, 28, 28, 0.8);" onclick="deleteUser('${username}')">O'chirish 🗑️</button>
-          </div>
-        `;
-        container.appendChild(item);
-      });
-    } catch (e) {
-      document.getElementById('usersList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik berdi</p>";
+      } catch (e) { console.log("DB update error:", e); }
     }
-  }
 
-  async function setUserWheelInterval(username) {
-    const snap = await window.get(window.child(window.dbRef, `users/${username}`));
-    const currentCustom = snap.exists() && snap.val().customCooldownHours !== undefined ? snap.val().customCooldownHours : globalWheelCooldownHours;
+    async function updateTimerDisplay() {
+      if (!currentUser) return;
 
-    const inputHours = prompt(`@${username} uchun baraban har necha SOATDA qayta ochilsin?\n(Standart: ${globalWheelCooldownHours} soat)`, currentCustom);
-    if (inputHours === null) return;
-
-    const hours = parseFloat(inputHours);
-    if (isNaN(hours) || hours < 0) return alert("Iltimos, to'g'ri soat miqdorini kiriting!");
-
-    try {
-      await window.update(window.child(window.dbRef, `users/${username}`), {
-        customCooldownHours: hours
-      });
-      alert(`@${username} uchun baraban intervali ${hours} soatga o'zgartirildi!`);
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
-
-  async function setUserWheelDelay(username) {
-    const snap = await window.get(window.child(window.dbRef, `users/${username}`));
-    if (!snap.exists()) return;
-    const userData = snap.val();
-
-    const userCooldownHours = (userData.customCooldownHours !== undefined && userData.customCooldownHours !== null) 
-      ? Number(userData.customCooldownHours) 
-      : globalWheelCooldownHours;
-
-    const inputHours = prompt(`@${username} hozirdan boshlab necha SOATDAN KEYIN barabanylantira olsin?\n(0 kiritsangiz darhol ochiladi, masalan: 2, 3.5, 5.2)`,"0");
-    if (inputHours === null) return;
-
-    const hoursNeeded = parseFloat(inputHours);
-    if (isNaN(hoursNeeded) || hoursNeeded < 0) return alert("Iltimos, to'g'ri soat kiriting!");
-
-    try {
       const now = Date.now();
+      let subUntil = Number(currentUser.subUntil || 0);
+
+      if (subUntil > 0 && subUntil < 10000000000) { subUntil = subUntil * 1000; }
+
+      const badge = document.getElementById('subStatusBadge');
+      const timeLeft = document.getElementById('subTimeLeft');
+      const calcContentContainer = document.getElementById('calcContentContainer');
+      const blockedMsg = document.getElementById('blockedMessage');
+
+      const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
+        ? Number(currentUser.customCooldownHours)
+        : globalWheelCooldownHours;
+
+      const lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
+      let spinsUsed = Number(currentUser.spinsUsed || 0);
       const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
-      if (hoursNeeded === 0) {
-        await window.update(window.child(window.dbRef, `users/${username}`), {
-          spinsUsed: 0,
-          lastSpinBatchTime: 0
-        });
-        alert(`@${username} uchun baraban darhol ochildi!`);
-      } else {
-        const newBatchTime = now - (cooldownMs - (hoursNeeded * 60 * 60 * 1000));
-        await window.update(window.child(window.dbRef, `users/${username}`), {
-          spinsUsed: 3,
-          lastSpinBatchTime: newBatchTime
-        });
-        alert(`@${username} uchun kutish vaqti hozirdan boshlab ${hoursNeeded} soatga belgilandi!`);
+      if (now - lastBatchTime >= cooldownMs) { spinsUsed = 0; }
+      const remainingSpins = Math.max(0, 3 - spinsUsed);
+      const spinBtn = document.getElementById('spinBtn');
+
+      if (spinBtn) {
+        if (remainingSpins > 0) {
+          document.getElementById('wheelSpinsText').innerText = `Imkoniyat: ${remainingSpins} / 3 marta`;
+          spinBtn.disabled = false;
+        } else {
+          const waitDiff = cooldownMs - (now - lastBatchTime);
+          if (waitDiff <= 0) {
+            currentUser.spinsUsed = 0;
+            document.getElementById('wheelSpinsText').innerText = `Imkoniyat: 3 / 3 marta`;
+            spinBtn.disabled = false;
+          } else {
+            const wHours = Math.floor(waitDiff / (1000 * 60 * 60));
+            const wMins = Math.floor((waitDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const wSecs = Math.floor((waitDiff % (1000 * 60)) / 1000);
+            const hStr = String(wHours).padStart(2, '0');
+            const mStr = String(wMins).padStart(2, '0');
+            const sStr = String(wSecs).padStart(2, '0');
+            document.getElementById('wheelSpinsText').innerText = `Qayta aylantirish: ${hStr}:${mStr}:${sStr} dan keyin`;
+            spinBtn.disabled = true;
+          }
+        }
       }
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
 
-  async function grantSubHours(username) {
-    const hoursStr = prompt(`@${username} uchun necha SOAT premium bermoqchisiz?`);
-    if (!hoursStr) return;
-    const hours = parseFloat(hoursStr);
-    if (isNaN(hours) || hours <= 0) return alert("Iltimos, to'g'ri son kiriting!");
+      // Check Active Global News Signal from Admin
+      await checkAndRenderActiveNews(now);
 
-    try {
+      if (subUntil && subUntil > now) {
+        const diff = subUntil - now;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        const hStr = String(hours).padStart(2, '0');
+        const mStr = String(mins).padStart(2, '0');
+        const sStr = String(secs).padStart(2, '0');
+
+        badge.innerText = "PREMIUM 👑";
+        badge.className = "status-badge status-active";
+        timeLeft.innerHTML = `⏱️ Qoldi: <b style="color:#4ade80; font-size:0.9rem;">${days} kun, ${hStr}:${mStr}:${sStr}</b>`;
+        
+        calcContentContainer.style.display = "block";
+        blockedMsg.style.display = "none";
+      } else {
+        badge.innerText = "NOFAOL ❌";
+        badge.className = "status-badge status-expired";
+        timeLeft.innerHTML = `⏱️ <span style="color:#f87171; font-weight:bold;">Obuna vaqti tugagan</span>`;
+        
+        calcContentContainer.style.display = "none";
+        blockedMsg.style.display = "block";
+      }
+    }
+
+    async function checkAndRenderActiveNews(now) {
+      try {
+        const snap = await window.get(window.child(window.dbRef, 'settings/activeNews'));
+        const container = document.getElementById('activeNewsContainer');
+        const userNewsList = document.getElementById('userNewsSignalsList');
+        if (!container || !userNewsList) return;
+
+        if (!snap.exists()) {
+          container.style.display = 'none';
+          userNewsList.innerHTML = "Hozircha faol News signallari mavjud emas. Admin signal berganda shu yerda ko'rinadi.";
+          return;
+        }
+
+        const news = snap.val();
+        const newsTime = Number(news.timestamp);
+        const diff = newsTime - now;
+
+        let timeStr = "";
+        let isStarted = false;
+
+        if (diff <= 0) {
+          isStarted = true;
+          timeStr = "VAQTI KELDI! 🚨";
+        } else {
+          const dDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const dHours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const dMins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const dSecs = Math.floor((diff % (1000 * 60)) / 1000);
+
+          timeStr = `${String(dHours).padStart(2,'0')}:${String(dMins).padStart(2,'0')}:${String(dSecs).padStart(2,'0')}`;
+          if (dDays > 0) timeStr = `${dDays} kun ` + timeStr;
+        }
+
+        const dirColor = news.direction === 'BUY' ? '#4ade80' : '#f87171';
+
+        // Yuqoridagi kichik faol banner
+        container.innerHTML = `
+          <div class="sniper-result-box" style="background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.4);">
+            <div class="sniper-title" style="color: #fde047;">📢 FAOL NEWS: ${news.title}</div>
+            <div style="font-size: 0.85rem; color: #fff; text-align: center; margin-bottom: 4px;">Yo'nalish: <b style="color: ${dirColor}">${news.direction}</b> | Asosiy Narx: <b>${news.basePrice || '-'}</b></div>
+            <div style="font-size: 0.85rem; color: #fef08a; text-align: center;">⏱️ Qolgan vaqt: <b>${timeStr}</b></div>
+          </div>
+        `;
+        container.style.display = 'block';
+
+        // News Signal paneli ichidagi to'liq ma'lumot
+        userNewsList.innerHTML = `
+          <div class="sniper-result-box" style="background: rgba(14, 165, 233, 0.12); border-color: rgba(56, 189, 248, 0.35); text-align: left; padding: 14px;">
+            <div style="font-size: 0.95rem; font-weight: bold; color: #38bdf8; margin-bottom: 8px; text-align: center;">🎯 ${news.title}</div>
+            <div style="font-size: 0.9rem; color: #fff; line-height: 1.6;">
+              📊 Yo'nalish: <b style="color: ${dirColor}">${news.direction}</b><br>
+              💰 Asosiy Narx: <b>$${news.basePrice || '-'}</b><br>
+              📝 Ma'lumot / Zonalar: <b style="color: #fde047;">${news.extra || 'Mavjud emas'}</b><br>
+              ⏰ Vaqti: <b>${new Date(news.timestamp).toLocaleString()}</b><br>
+              ⌛ Holat: <b style="color: ${isStarted ? '#4ade80' : '#facc15'}">${isStarted ? 'Boshlandi / Faol' : 'Kutilmoqda (' + timeStr + ')'}</b>
+            </div>
+          </div>
+        `;
+
+      } catch(e) {}
+    }
+
+    async function publishNewsSignal() {
+      const title = document.getElementById('adminNewsTitle').value.trim();
+      const direction = document.getElementById('adminNewsDirection').value;
+      const basePrice = document.getElementById('adminNewsBasePrice').value.trim();
+      const extra = document.getElementById('adminNewsExtra').value.trim();
+      const dtInput = document.getElementById('adminNewsDateTime').value;
+
+      if (!title || !dtInput) {
+        alert("Iltimos, nomini va sanasini to'ldiring!");
+        return;
+      }
+
+      const timestamp = new Date(dtInput).getTime();
+      try {
+        await window.set(window.child(window.dbRef, 'settings/activeNews'), {
+          title: title,
+          direction: direction,
+          basePrice: basePrice,
+          extra: extra,
+          timestamp: timestamp
+        });
+        alert("News signal barcha foydalanuvchilarga muvaffaqiyatli e'lon qilindi! 🚀");
+        document.getElementById('adminNewsTitle').value = "";
+        document.getElementById('adminNewsBasePrice').value = "";
+        document.getElementById('adminNewsExtra').value = "";
+        document.getElementById('adminNewsDateTime').value = "";
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function removeNewsSignal() {
+      if (!confirm("Faol news signalni o'chirmoqchimisiz?")) return;
+      try {
+        await window.remove(window.child(window.dbRef, 'settings/activeNews'));
+        alert("News signal o'chirildi!");
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function processPromoActivation(rawCode) {
+      if (!rawCode) { alert("Iltimos, promokodni kiriting!"); return; }
+      const promoCode = rawCode.toLowerCase();
+
+      try {
+        if (currentUser.redeemedPromos && currentUser.redeemedPromos[promoCode]) {
+          alert("Siz bu promokodni oldin ishlatgansiz!");
+          return;
+        }
+
+        const promoSnapshot = await window.get(window.child(window.dbRef, `promocodes/${promoCode}`));
+        if (!promoSnapshot.exists()) {
+          alert("Bunday promokod mavjud emas!");
+          return;
+        }
+
+        const promoData = promoSnapshot.val();
+        const now = Date.now();
+
+        if (promoData.expiresAt && now > promoData.expiresAt) {
+          alert("Kechirasiz, bu promokodning amal qilish muddati tugagan! ⌛");
+          return;
+        }
+
+        const currentStars = Number(currentUser.stars || 0);
+        const addedStars = Number(promoData.stars);
+
+        if (!currentUser.redeemedPromos) { currentUser.redeemedPromos = {}; }
+        currentUser.redeemedPromos[promoCode] = true;
+
+        await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
+          stars: currentStars + addedStars,
+          redeemedPromos: currentUser.redeemedPromos
+        });
+
+        document.getElementById('mainPromoInput').value = "";
+        closePromoModal();
+        alert(`Tabriklaymiz! Balansingizga +${addedStars} Stars qo'shildi! 🎉`);
+        await fetchFreshUserData();
+        updateTimerDisplay();
+      } catch (e) { alert("Xatolik yuz berdi: " + e.message); }
+    }
+
+    function redeemMainPromoCode() {
+      const code = document.getElementById('mainPromoInput').value.trim();
+      processPromoActivation(code);
+    }
+
+    async function spinWheel() {
       const now = Date.now();
+
+      const userCooldownHours = (currentUser.customCooldownHours !== undefined && currentUser.customCooldownHours !== null)
+        ? Number(currentUser.customCooldownHours)
+        : globalWheelCooldownHours;
+
+      let lastBatchTime = Number(currentUser.lastSpinBatchTime || 0);
+      let spinsUsed = Number(currentUser.spinsUsed || 0);
+      const cooldownMs = userCooldownHours * 60 * 60 * 1000;
+
+      if (now - lastBatchTime >= cooldownMs) {
+        spinsUsed = 0;
+        lastBatchTime = now;
+      }
+
+      if (spinsUsed >= 3) {
+        alert(`Siz 3 ta imkoniyatdan foydalandingiz! ${userCooldownHours} soatdan keyin qayta urinib ko'ring.`);
+        return;
+      }
+
+      spinsUsed++;
+      let totalSpins = Number(currentUser.totalSpins || 0) + 1;
+      let wonStars = (totalSpins % 30 === 15 || totalSpins % 30 === 0) ? 30 : (Math.floor(Math.random() * 21) + 5);
+
+      document.getElementById('spinBtn').disabled = true;
+      currentWheelRotation += 1440 + Math.floor(Math.random() * 360);
+      document.getElementById('wheel').style.transform = `rotate(${currentWheelRotation}deg)`;
+
+      setTimeout(async () => {
+        const newStars = Number(currentUser.stars || 0) + wonStars;
+        await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
+          stars: newStars,
+          lastSpinBatchTime: lastBatchTime,
+          spinsUsed: spinsUsed,
+          totalSpins: totalSpins
+        });
+        alert(`Tabriklaymiz! Siz ${wonStars} ta Stars yutib oldingiz! 🎉`);
+        await fetchFreshUserData();
+        updateTimerDisplay();
+      }, 4000);
+    }
+
+    async function applyForPremium(days, requiredStars) {
+      const currentStars = Number(currentUser.stars || 0);
+      if (currentStars < requiredStars) {
+        alert("Balansda stars yetarli emas!");
+        return;
+      }
+
+      try {
+        await window.update(window.child(window.dbRef, `users/${currentUser.username}`), {
+          stars: currentStars - requiredStars
+        });
+
+        const reqId = Date.now();
+        const reqData = {
+          username: currentUser.username,
+          name: currentUser.name || currentUser.username,
+          days: days,
+          stars: requiredStars,
+          date: new Date().toLocaleString()
+        };
+
+        await window.set(window.child(window.dbRef, `requests/${reqId}`), reqData);
+        alert("Ariza yuborildi! Admin tez orada Premium beradi.");
+        showCard('calcCard');
+        await fetchFreshUserData();
+        updateTimerDisplay();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    function addTimeStep(timeStr, multiplier = 1) {
+      if (!timeStr) return "00:00";
+      let parts = timeStr.split(":");
+      let hours = parseInt(parts[0], 10) || 0;
+      let minutes = parseInt(parts[1], 10) || 0;
+
+      let tens = Math.floor(minutes / 10);
+      let units = minutes % 10;
+      let sumDigits = tens + units;
+      
+      let totalAdd = (sumDigits === 0 ? 5 : sumDigits) * multiplier;
+      let newMinutes = minutes + totalAdd;
+      
+      hours = (hours + Math.floor(newMinutes / 60)) % 24;
+      newMinutes = newMinutes % 60;
+
+      let hStr = String(hours).padStart(2, '0');
+      let mStr = String(newMinutes).padStart(2, '0');
+
+      return `${hStr}:${mStr}`;
+    }
+
+    function calculateSniper() {
+      const p = parseFloat(document.getElementById('pPrice').value);
+      const dir = document.getElementById('direction').value;
+      const dayNum = parseFloat(document.getElementById('dayNum').value) || 0;
+      const timeVal = document.getElementById('timeInput').value;
+
+      if (isNaN(p) || isNaN(dayNum)) {
+        alert("Iltimos, narx va sanani to'g'ri kiriting!");
+        return;
+      }
+
+      const stepOffset = dayNum * 0.1; 
+      const extraOffset = 20 * 0.1; 
+
+      let e1, e2;
+      if (dir === 'BUY') {
+          e1 = p + stepOffset;
+          e2 = e1 + extraOffset;
+      } else {
+          e1 = p - stepOffset;
+          e2 = e1 - extraOffset;
+      }
+
+      const tp1Time = addTimeStep(timeVal, 1);
+      const tp2Time = addTimeStep(timeVal, 2);
+
+      document.getElementById('entryTitle').innerText = dir === 'BUY' ? '🎯 SNIPER BUY ZONALAR (KIRISH)' : '🎯 SNIPER SELL ZONALAR (KIRISH)';
+      document.getElementById('entryPrice').innerHTML = `1-Entry: $${e1.toFixed(2)}<br>2-Entry: $${e2.toFixed(2)}`;
+      
+      document.getElementById('tpTableBody').innerHTML = `
+        <tr><td>TP 1 (Intraday)</td><td class="val-green">$${(e1 * (dir === 'BUY' ? 1.002 : 0.998)).toFixed(2)}</td><td>${tp1Time}</td></tr>
+        <tr><td>TP 2 (Swing)</td><td class="val-green">$${(e2 * (dir === 'BUY' ? 1.004 : 0.996)).toFixed(2)}</td><td>${tp2Time}</td></tr>
+      `;
+      document.getElementById('results').style.display = 'block';
+    }
+
+    function setGoldDirection(dir) {
+      selectedGoldDirection = dir;
+      if (dir === 'SELL') {
+        document.getElementById('goldSellBtn').classList.add('active');
+        document.getElementById('goldBuyBtn').classList.remove('active');
+      } else {
+        document.getElementById('goldBuyBtn').classList.add('active');
+        document.getElementById('goldSellBtn').classList.remove('active');
+      }
+    }
+
+    function calculateGoldZones() {
+      const maxVal = parseFloat(document.getElementById('goldMax').value);
+      const minVal = parseFloat(document.getElementById('goldMin').value);
+
+      if (isNaN(maxVal) || isNaN(minVal) || maxVal <= minVal) {
+        alert("Iltimos, Max va Min narxlarni to'g'ri kiriting!");
+        return;
+      }
+
+      const diff = maxVal - minVal;
+      let z1, z2, target;
+
+      if (selectedGoldDirection === 'SELL') {
+        z1 = minVal + (diff * 0.618);
+        z2 = minVal + (diff * 0.786);
+        target = minVal - (diff * 0.27);
+      } else {
+        z1 = maxVal - (diff * 0.618);
+        z2 = maxVal - (diff * 0.786);
+        target = maxVal + (diff * 0.27);
+      }
+
+      document.getElementById('goldResultDisplay').innerHTML = `
+        Yo'nalish: <b>${selectedGoldDirection}</b><br>
+        1-ZONA: <b>$${z1.toFixed(2)}</b><br>
+        2-ZONA: <b>$${z2.toFixed(2)}</b><br>
+        Target (TP): <b>$${target.toFixed(2)}</b>
+      `;
+      document.getElementById('goldResultBox').style.display = 'block';
+    }
+
+    function calculateRazvarotTime() {
+      const timeVal = document.getElementById('razvarotTimeInput').value;
+      if (!timeVal) {
+        alert("Iltimos, vaqtni kiriting!");
+        return;
+      }
+
+      const time1 = addTimeStep(timeVal, 1);
+      const time2 = addTimeStep(timeVal, 2);
+
+      const timeText = `1-Oyna: ${time1} (Toshkent v.)<br>2-Oyna: ${time2} (Toshkent v.)`;
+
+      document.getElementById('razvarotResultDisplay').innerHTML = timeText;
+      document.getElementById('razvarotResultBox').style.display = 'block';
+    }
+
+    function loadAdminPanel() {
+      showCard('adminCard');
+      loadGlobalWheelCooldown();
+      renderAdminData();
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(renderAdminData, 4000);
+    }
+
+    async function loadGlobalWheelCooldown() {
+      try {
+        const snap = await window.get(window.child(window.dbRef, 'settings/wheelCooldownHours'));
+        if (snap.exists()) {
+          globalWheelCooldownHours = Number(snap.val());
+          document.getElementById('adminWheelCooldownInput').value = globalWheelCooldownHours;
+        } else {
+          document.getElementById('adminWheelCooldownInput').value = 12;
+        }
+      } catch(e) {}
+    }
+
+    async function updateGlobalWheelCooldown() {
+      const hours = parseFloat(document.getElementById('adminWheelCooldownInput').value);
+      if (isNaN(hours) || hours < 0) {
+        alert("Iltimos, soatni to'g'ri kiriting!");
+        return;
+      }
+
+      try {
+        await window.set(window.child(window.dbRef, 'settings/wheelCooldownHours'), hours);
+        globalWheelCooldownHours = hours;
+        alert(`Barcha uchun standart baraban kutish vaqti ${hours} soatga o'zgartirildi!`);
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function renderAdminData() {
+      renderAdminPromos();
+      renderRequestsList();
+      renderUsersList();
+    }
+
+    async function createNewPromoCode() {
+      const rawCode = document.getElementById('adminPromoCode').value.trim();
+      const starsVal = parseInt(document.getElementById('adminPromoStars').value);
+      const expireInput = document.getElementById('adminPromoExpire').value;
+
+      if (!rawCode || isNaN(starsVal) || !expireInput) {
+        alert("Barcha maydonlarni va tugash vaqtini to'g'ri to'ldiring!");
+        return;
+      }
+
+      const promoCode = rawCode.toLowerCase();
+      const expireTimestamp = new Date(expireInput).getTime();
+
+      try {
+        await window.set(window.child(window.dbRef, `promocodes/${promoCode}`), {
+          code: promoCode,
+          stars: starsVal,
+          expiresAt: expireTimestamp
+        });
+
+        document.getElementById('adminPromoCode').value = "";
+        document.getElementById('adminPromoExpire').value = "";
+        alert(`"${promoCode}" promokodi yaratildi!`);
+        renderAdminPromos();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function renderAdminPromos() {
+      try {
+        const snapshot = await window.get(window.child(window.dbRef, `promocodes`));
+        const container = document.getElementById('promoListContainer');
+        container.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          container.innerHTML = "<p style='text-align:center; color:#94a3b8; font-size:0.8rem;'>Faol promokodlar yo'q</p>";
+          return;
+        }
+
+        const promos = snapshot.val();
+        const now = Date.now();
+
+        Object.keys(promos).forEach(codeKey => {
+          const promo = promos[codeKey];
+          const isExpired = promo.expiresAt && now > promo.expiresAt;
+          const expireDateStr = promo.expiresAt ? new Date(promo.expiresAt).toLocaleString() : 'Cheksiz';
+
+          const item = document.createElement('div');
+          item.className = 'user-item';
+          item.style.borderColor = isExpired ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255,255,255,0.12)';
+          item.innerHTML = `
+            <div class="user-item-header">
+              <span style="color: #38bdf8; text-transform: uppercase;">🎁 ${promo.code}</span>
+              <span style="color: #facc15;">+${promo.stars} Stars</span>
+            </div>
+            <div style="font-size: 0.75rem; color: ${isExpired ? '#fca5a5' : '#cbd5e1'}; margin-bottom: 4px;">
+              Muddati: ${expireDateStr} ${isExpired ? '(Tugagan ❌)' : ''}
+            </div>
+            <div class="user-actions">
+              <button class="btn-small btn-danger" onclick="deletePromoCode('${promo.code}')">O'chirish 🗑</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      } catch (e) {
+        document.getElementById('promoListContainer').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik</p>";
+      }
+    }
+
+    async function deletePromoCode(code) {
+      if (!confirm(`Haqiqatan ham "${code}" promokodini o'chirmoqchimisiz?`)) return;
+      try {
+        await window.remove(window.child(window.dbRef, `promocodes/${code}`));
+        alert("Promokod o'chirildi!");
+        renderAdminPromos();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function renderRequestsList() {
+      try {
+        const snapshot = await window.get(window.child(window.dbRef, `requests`));
+        const container = document.getElementById('requestsList');
+        const badge = document.getElementById('reqBadge');
+        container.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          container.innerHTML = "<p style='text-align:center; color:#cbd5e1; font-size:0.8rem;'>Arizalar mavjud emas</p>";
+          badge.style.display = 'none';
+          previousRequestsCount = 0;
+          return;
+        }
+
+        const requests = snapshot.val();
+        const reqKeys = Object.keys(requests);
+        const currentCount = reqKeys.length;
+
+        if (currentCount > previousRequestsCount && previousRequestsCount !== 0) {
+          alert("📩 Yangi Premium so'rovi tushdi!");
+        }
+        previousRequestsCount = currentCount;
+        badge.innerText = currentCount;
+        badge.style.display = 'inline-block';
+
+        reqKeys.forEach(reqId => {
+          const req = requests[reqId];
+          const item = document.createElement('div');
+          item.className = 'user-item';
+          
+          item.innerHTML = `
+            <div class="user-item-header">
+              <span>👤 ${req.username}</span>
+              <span style="color: #facc15;">${req.days} Kun</span>
+            </div>
+            <div style="font-size: 0.75rem; color: #cbd5e1;">Sana: ${req.date}</div>
+            <div class="user-actions">
+              <button class="btn-small btn-success" onclick="approvePremium('${reqId}', '${req.username}', ${req.days})">Tasdiqlash ✅</button>
+              <button class="btn-small btn-danger" onclick="rejectPremium('${reqId}', '${req.username}', ${req.stars})">Rad etish ❌</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      } catch (e) {
+        document.getElementById('requestsList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik</p>";
+      }
+    }
+
+    async function approvePremium(reqId, username, days) {
+      try {
+        const now = Date.now();
+        const addMs = days * 24 * 60 * 60 * 1000;
+        const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+        const currentSub = snap.exists() ? Number(snap.val().subUntil || 0) : 0;
+        const newSub = (currentSub > now ? currentSub : now) + addMs;
+        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
+        await window.remove(window.child(window.dbRef, `requests/${reqId}`));
+        alert("Premium tasdiqlandi!");
+        renderRequestsList();
+        renderUsersList();
+      } catch (e) { alert(e.message); }
+    }
+
+    async function rejectPremium(reqId, username, stars) {
+      try {
+        const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+        const currentStars = snap.exists() ? Number(snap.val().stars || 0) : 0;
+        await window.update(window.child(window.dbRef, `users/${username}`), { stars: currentStars + stars });
+        await window.remove(window.child(window.dbRef, `requests/${reqId}`));
+        alert("Ariza rad etildi!");
+        renderRequestsList();
+      } catch (e) { alert(e.message); }
+    }
+
+    async function renderUsersList() {
+      try {
+        const snapshot = await window.get(window.child(window.dbRef, `users`));
+        const container = document.getElementById('usersList');
+        container.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          container.innerHTML = "<p style='text-align:center; color:#cbd5e1; font-size:0.8rem;'>Foydalanuvchilar yo'q</p>";
+          return;
+        }
+
+        const users = snapshot.val();
+        const now = Date.now();
+
+        Object.keys(users).forEach(username => {
+          if (username === 'admin') return; 
+          const u = users[username];
+          const subUntil = Number(u.subUntil || 0);
+          const hasSub = subUntil && subUntil > now;
+          
+          let subText = 'Nofaol ❌';
+          if (hasSub) {
+            const hoursLeft = Math.ceil((subUntil - now) / (1000 * 60 * 60));
+            if (hoursLeft > 48) {
+              const daysLeft = Math.ceil(hoursLeft / 24);
+              subText = `Faol (${daysLeft} kun) ✅`;
+            } else {
+              subText = `Faol (${hoursLeft} soat) ✅`;
+            }
+          }
+
+          const userCooldownHours = (u.customCooldownHours !== undefined && u.customCooldownHours !== null) 
+            ? Number(u.customCooldownHours) 
+            : globalWheelCooldownHours;
+
+          const userLastSpinBatch = Number(u.lastSpinBatchTime || 0);
+          const userSpinsUsed = Number(u.spinsUsed || 0);
+          const cooldownMs = userCooldownHours * 60 * 60 * 1000;
+          const isWheelLocked = (userSpinsUsed >= 3) && (now - userLastSpinBatch < cooldownMs);
+
+          let wheelStatusStr = "✅ Tayyor";
+          if (isWheelLocked) {
+            const diffMs = cooldownMs - (now - userLastSpinBatch);
+            const remainH = (diffMs / (1000 * 60 * 60)).toFixed(1);
+            wheelStatusStr = `🔒 ${remainH} soat qoldi`;
+          }
+
+          const item = document.createElement('div');
+          item.className = 'user-item';
+          item.innerHTML = `
+            <div class="user-item-header">
+              <span>👤 ${u.name || username} (@${username})</span>
+              <span style="color: ${hasSub ? '#4ade80' : '#f87171'};">${subText}</span>
+            </div>
+            <div style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 6px;">
+              Balans: ⭐ ${u.stars || 0} Stars | Baraban: <b>${wheelStatusStr}</b> <span style="color:#38bdf8;">(Interval: ${userCooldownHours}h)</span>
+            </div>
+            <div class="user-actions">
+              <button class="btn-small btn-warning" onclick="setUserWheelInterval('${username}')">⏱️ Baraban Soati</button>
+              <button class="btn-small btn-main" onclick="setUserWheelDelay('${username}')">⏳ Kutish Soati</button>
+              <button class="btn-small btn-success" onclick="grantSubDaysCustom('${username}')">+Kun Premium</button>
+              <button class="btn-small btn-warning" onclick="grantSubHours('${username}')">+Soat Premium</button>
+              <button class="btn-small btn-main" onclick="grantStars('${username}')">+Stars ⭐</button>
+              <button class="btn-small btn-danger" onclick="revokeSub('${username}')">Premiumni o'chirish ❌</button>
+              <button class="btn-small btn-danger" style="background: rgba(185, 28, 28, 0.8);" onclick="deleteUser('${username}')">O'chirish 🗑️</button>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+      } catch (e) {
+        document.getElementById('usersList').innerHTML = "<p style='text-align:center; color:#f87171; font-size:0.8rem;'>Xatolik berdi</p>";
+      }
+    }
+
+    async function setUserWheelInterval(username) {
+      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+      const currentCustom = snap.exists() && snap.val().customCooldownHours !== undefined ? snap.val().customCooldownHours : globalWheelCooldownHours;
+
+      const inputHours = prompt(`@${username} uchun baraban har necha SOATDA qayta ochilsin?\n(Standart: ${globalWheelCooldownHours} soat)`, currentCustom);
+      if (inputHours === null) return;
+
+      const hours = parseFloat(inputHours);
+      if (isNaN(hours) || hours < 0) return alert("Iltimos, to'g'ri soat miqdorini kiriting!");
+
+      try {
+        await window.update(window.child(window.dbRef, `users/${username}`), {
+          customCooldownHours: hours
+        });
+        alert(`@${username} uchun baraban intervali ${hours} soatga o'zgartirildi!`);
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function setUserWheelDelay(username) {
       const snap = await window.get(window.child(window.dbRef, `users/${username}`));
       if (!snap.exists()) return;
-      const currentSub = Number(snap.val().subUntil || 0);
-      const newSub = (currentSub > now ? currentSub : now) + (hours * 60 * 60 * 1000);
-      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
-      alert(`@${username} foydalanuvchisiga ${hours} soatlik premium berildi!`);
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
+      const userData = snap.val();
 
-  async function grantSubDaysCustom(username) {
-    const daysStr = prompt(`@${username} uchun necha KUN premium bermoqchisiz?`);
-    if (!daysStr) return;
-    const days = parseFloat(daysStr);
-    if (isNaN(days) || days <= 0) return alert("Iltimos, to'g'ri son kiriting!");
+      const userCooldownHours = (userData.customCooldownHours !== undefined && userData.customCooldownHours !== null) 
+        ? Number(userData.customCooldownHours) 
+        : globalWheelCooldownHours;
 
-    try {
-      const now = Date.now();
-      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (!snap.exists()) return;
-      const currentSub = Number(snap.val().subUntil || 0);
-      const newSub = (currentSub > now ? currentSub : now) + (days * 24 * 60 * 60 * 1000);
-      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
-      alert(`@${username} foydalanuvchisiga ${days} kunlik premium berildi!`);
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
+      const inputHours = prompt(`@${username} hozirdan boshlab necha SOATDAN KEYIN barabanylantira olsin?\n(0 kiritsangiz darhol ochiladi, masalan: 2, 3.5, 5.2)`,"0");
+      if (inputHours === null) return;
 
-  async function revokeSub(username) {
-    if (!confirm(`Haqiqatan ham @${username} foydalanuvchisining premium obunasini bekor qilmoqchimisiz?`)) return;
-    try {
-      await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
-      alert(`@${username} foydalanuvchisining premium obunasi o'chirildi!`);
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
+      const hoursNeeded = parseFloat(inputHours);
+      if (isNaN(hoursNeeded) || hoursNeeded < 0) return alert("Iltimos, to'g'ri soat kiriting!");
 
-  async function grantStars(username) {
-    const starsStr = prompt(`@${username} uchun nechta Stars bermoqchisiz?\n(Ayrish uchun manfiy son kiriting, masalan: -500)`);
-    if (!starsStr) return;
-    const amount = parseInt(starsStr);
-    if (isNaN(amount)) return alert("Iltimos, to'g'ri raqam kiriting!");
+      try {
+        const now = Date.now();
+        const cooldownMs = userCooldownHours * 60 * 60 * 1000;
 
-    try {
-      const snap = await window.get(window.child(window.dbRef, `users/${username}`));
-      if (!snap.exists()) return;
-      const currentStars = Number(snap.val().stars || 0);
-      const newStars = Math.max(0, currentStars + amount);
-      await window.update(window.child(window.dbRef, `users/${username}`), { stars: newStars });
-      alert(`@${username} balansi yangilandi! Yangi balans: ${newStars} Stars`);
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
+        if (hoursNeeded === 0) {
+          await window.update(window.child(window.dbRef, `users/${username}`), {
+            spinsUsed: 0,
+            lastSpinBatchTime: 0
+          });
+          alert(`@${username} uchun baraban darhol ochildi!`);
+        } else {
+          const newBatchTime = now - (cooldownMs - (hoursNeeded * 60 * 60 * 1000));
+          await window.update(window.child(window.dbRef, `users/${username}`), {
+            spinsUsed: 3,
+            lastSpinBatchTime: newBatchTime
+          });
+          alert(`@${username} uchun kutish vaqti hozirdan boshlab ${hoursNeeded} soatga belgilandi!`);
+        }
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
 
-  async function deleteUser(username) {
-    if (!confirm(`Haqiqatan ham @${username} foydalanuvchisini bazadan o'chirmoqchimisiz?`)) return;
-    try {
-      await window.remove(window.child(window.dbRef, `users/${username}`));
-      alert("Foydalanuvchi bazadan o'chirildi!");
-      renderUsersList();
-    } catch (e) { alert("Xato: " + e.message); }
-  }
-</script>
+    async function grantSubHours(username) {
+      const hoursStr = prompt(`@${username} uchun necha SOAT premium bermoqchisiz?`);
+      if (!hoursStr) return;
+      const hours = parseFloat(hoursStr);
+      if (isNaN(hours) || hours <= 0) return alert("Iltimos, to'g'ri son kiriting!");
+
+      try {
+        const now = Date.now();
+        const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+        if (!snap.exists()) return;
+        const currentSub = Number(snap.val().subUntil || 0);
+        const newSub = (currentSub > now ? currentSub : now) + (hours * 60 * 60 * 1000);
+        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
+        alert(`@${username} foydalanuvchisiga ${hours} soatlik premium berildi!`);
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function grantSubDaysCustom(username) {
+      const daysStr = prompt(`@${username} uchun necha KUN premium bermoqchisiz?`);
+      if (!daysStr) return;
+      const days = parseFloat(daysStr);
+      if (isNaN(days) || days <= 0) return alert("Iltimos, to'g'ri son kiriting!");
+
+      try {
+        const now = Date.now();
+        const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+        if (!snap.exists()) return;
+        const currentSub = Number(snap.val().subUntil || 0);
+        const newSub = (currentSub > now ? currentSub : now) + (days * 24 * 60 * 60 * 1000);
+        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: newSub });
+        alert(`@${username} foydalanuvchisiga ${days} kunlik premium berildi!`);
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function revokeSub(username) {
+      if (!confirm(`Haqiqatan ham @${username} foydalanuvchisining premium obunasini bekor qilmoqchimisiz?`)) return;
+      try {
+        await window.update(window.child(window.dbRef, `users/${username}`), { subUntil: 0 });
+        alert(`@${username} foydalanuvchisining premium obunasi o'chirildi!`);
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function grantStars(username) {
+      const starsStr = prompt(`@${username} uchun nechta Stars bermoqchisiz?\n(Ayrish uchun manfiy son kiriting, masalan: -500)`);
+      if (!starsStr) return;
+      const amount = parseInt(starsStr);
+      if (isNaN(amount)) return alert("Iltimos, to'g'ri raqam kiriting!");
+
+      try {
+        const snap = await window.get(window.child(window.dbRef, `users/${username}`));
+        if (!snap.exists()) return;
+        const currentStars = Number(snap.val().stars || 0);
+        const newStars = Math.max(0, currentStars + amount);
+        await window.update(window.child(window.dbRef, `users/${username}`), { stars: newStars });
+        alert(`@${username} balansi yangilandi! Yangi balans: ${newStars} Stars`);
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+
+    async function deleteUser(username) {
+      if (!confirm(`Haqiqatan ham @${username} foydalanuvchisini bazadan o'chirmoqchimisiz?`)) return;
+      try {
+        await window.remove(window.child(window.dbRef, `users/${username}`));
+        alert("Foydalanuvchi bazadan o'chirildi!");
+        renderUsersList();
+      } catch (e) { alert("Xato: " + e.message); }
+    }
+  </script>
 </body>
 </html>
