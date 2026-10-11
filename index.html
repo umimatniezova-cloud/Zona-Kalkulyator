@@ -225,6 +225,47 @@
       margin-bottom: 12px;
       backdrop-filter: blur(10px);
     }
+
+    /* RAZGON STYLES */
+    .buy-title { color: #10b981; }
+    .sell-title { color: #ef4444; }
+    .zone-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .zone-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .zone-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      font-size: 13px;
+      text-align: center;
+    }
+    .col {
+      background: rgba(30, 41, 59, 0.6);
+      padding: 8px 6px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .col span {
+      display: block;
+      font-size: 10px;
+      color: #94a3b8;
+      margin-bottom: 3px;
+    }
+    .col b { font-size: 12px; }
+    .entry-zone { color: #38bdf8; }
+    .sl-price { color: #ef4444; }
+    .tp-price { color: #10b981; }
   </style>
 </head>
 <body>
@@ -304,11 +345,12 @@
       <button class="btn-small btn-success" style="width: 100%; padding: 10px;" onclick="redeemMainPromoCode()">Faollashtirish ✅</button>
     </div>
 
-    <!-- TAB MENU -->
-    <div style="display: flex; gap: 6px; margin-bottom: 15px;">
-      <button class="compact-btn btn-main" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(1)" id="tab1">🎯 Gann Pro</button>
-      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(2)" id="tab2">⚡ News Signal</button>
-      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:9px 4px; font-size:0.75rem;" onclick="switchTab(3)" id="tab3">🥇 Gold Zone</button>
+    <!-- TAB MENU (4 TA TAB) -->
+    <div style="display: flex; gap: 4px; margin-bottom: 15px;">
+      <button class="compact-btn btn-main" style="margin:0; flex:1; padding:8px 2px; font-size:0.7rem;" onclick="switchTab(1)" id="tab1">🎯 Gann</button>
+      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:8px 2px; font-size:0.7rem;" onclick="switchTab(2)" id="tab2">⚡ News</button>
+      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:8px 2px; font-size:0.7rem;" onclick="switchTab(3)" id="tab3">🥇 Gold</button>
+      <button class="compact-btn btn-secondary" style="margin:0; flex:1; padding:8px 2px; font-size:0.7rem;" onclick="switchTab(4)" id="tab4">🚀 Razgon</button>
     </div>
 
     <div id="blockedMessage" class="blocked-msg" style="display: none;">
@@ -364,32 +406,26 @@
         </div>
       </div>
 
-      <!-- 2-KALKULYATOR: NEWS SIGNAL (FAQAT ADMIN SIGNALARI KELADIGAN QISM) -->
+      <!-- 2-KALKULYATOR: NEWS SIGNAL -->
       <div id="calcContent2" style="display: none;">
-        
-        <!-- ADMIN TOMONIDAN YUBORILGAN GLOBAL NEWS SIGNAL BLOKI -->
         <div id="activeNewsContainer" style="display: none; margin-bottom: 12px;"></div>
 
-        <!-- 1. NEWS SIGNAL DROPDOWN BUTTON -->
         <button class="menu-accordion-btn" onclick="toggleAccordion('newsSignalPanel')">
           <span>📢 Admin News Signallari</span>
           <span>▼</span>
         </button>
 
-        <!-- NEWS SIGNAL PANEL CONTENT (Faqat Admin e'lon qilgan signallar chiqadi) -->
         <div id="newsSignalPanel" class="menu-accordion-content" style="display: block;">
           <div id="userNewsSignalsList" style="font-size: 0.9rem; color: #cbd5e1; text-align: center;">
             Hozircha yangi News signallari mavjud emas. Admin signal berganda shu yerda ko'rinadi.
           </div>
         </div>
 
-        <!-- 2. NEWS SIGNAL CHATI DROPDOWN BUTTON -->
         <button class="menu-accordion-btn" onclick="toggleAccordion('newsChatPanel')">
           <span>💬 News Signal Chati</span>
           <span>▼</span>
         </button>
 
-        <!-- NEWS SIGNAL CHATI PANEL CONTENT -->
         <div id="newsChatPanel" class="menu-accordion-content">
           <p style="font-size: 0.85rem; color: #cbd5e1; text-align: center; margin-top:0; margin-bottom: 12px;">
             Yangiliklar muhokamasi va signallar almashinish guruhi:
@@ -399,7 +435,6 @@
           </a>
         </div>
 
-        <!-- 3. NEWS SAVDO QOIDALARI & RISK -->
         <div class="box" style="border-color: rgba(245, 158, 11, 0.4); margin-top: 15px;">
           <div style="font-size: 0.95rem; font-weight: bold; color: #facc15; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
             <span>⚠️</span> News Savdo Qoidalari & Risk
@@ -409,13 +444,10 @@
             <p style="margin: 6px 0;">• <b>Yechish:</b> Impuls (spike) berishi bilan daromadni darhol qo'lda (manual) yechib oling!</p>
           </div>
         </div>
-
       </div>
 
       <!-- 3-KALKULYATOR: GOLD ZONE ENGINE & RAZVAROT -->
       <div id="calcContent3" style="display: none;">
-        
-        <!-- BLOCK 1: Gold Zone Engine -->
         <div class="box">
           <div class="sub-title">1. Gold Zone Engine (XAUUSD)</div>
           
@@ -444,7 +476,6 @@
           </div>
         </div>
 
-        <!-- BLOCK 2: Razvarot Vaqti -->
         <div class="box" style="margin-bottom: 0;">
           <div class="sub-title">2. Razvarot Vaqti</div>
           
@@ -462,8 +493,42 @@
             </div>
           </div>
         </div>
-
       </div>
+
+      <!-- 4-KALKULYATOR: RAZGON KALKULYATORI -->
+      <div id="calcContent4" style="display: none;">
+        <div class="box">
+          <div class="sub-title">🚀 Razgon Kalkulyatori</div>
+          
+          <div class="input-group">
+            <label>Trend Yo'nalishini Tanlang:</label>
+            <select id="trendSelect">
+              <option value="BUY">🟢 BUY (O'sish Trendi)</option>
+              <option value="SELL">🔴 SELL (Tushish Trendi)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Eng Yuqori Narx (High):</label>
+            <input type="number" id="highInput" step="any" placeholder="Masalan: 2700.00">
+          </div>
+
+          <div class="input-group">
+            <label>Eng Pastki Narx (Low):</label>
+            <input type="number" id="lowInput" step="any" placeholder="Masalan: 2650.00">
+          </div>
+
+          <button class="compact-btn btn-main" style="width:100%; font-size:0.9rem;" onclick="calculateRazgon()">Zonalarni Hisoblash ⚡</button>
+
+          <div class="results" id="resultsArea" style="display: none; margin-top: 15px;">
+            <div class="section-box" id="resultContainerBox" style="width:100%; padding: 12px;">
+              <div class="section-title" id="resultTitle" style="font-size: 0.9rem;">ZONALAR</div>
+              <div id="zoneResults"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -617,10 +682,12 @@
       document.getElementById('calcContent1').style.display = 'none';
       document.getElementById('calcContent2').style.display = 'none';
       document.getElementById('calcContent3').style.display = 'none';
+      document.getElementById('calcContent4').style.display = 'none';
 
       document.getElementById('tab1').className = 'compact-btn btn-secondary';
       document.getElementById('tab2').className = 'compact-btn btn-secondary';
       document.getElementById('tab3').className = 'compact-btn btn-secondary';
+      document.getElementById('tab4').className = 'compact-btn btn-secondary';
 
       document.getElementById(`calcContent${tabNum}`).style.display = 'block';
       document.getElementById(`tab${tabNum}`).className = 'compact-btn btn-main';
@@ -795,7 +862,6 @@
         }
       }
 
-      // Check Active Global News Signal from Admin
       await checkAndRenderActiveNews(now);
 
       if (subUntil && subUntil > now) {
@@ -860,7 +926,6 @@
 
         const dirColor = news.direction === 'BUY' ? '#4ade80' : '#f87171';
 
-        // Yuqoridagi kichik faol banner
         container.innerHTML = `
           <div class="sniper-result-box" style="background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.4);">
             <div class="sniper-title" style="color: #fde047;">📢 FAOL NEWS: ${news.title}</div>
@@ -870,7 +935,6 @@
         `;
         container.style.display = 'block';
 
-        // News Signal paneli ichidagi to'liq ma'lumot
         userNewsList.innerHTML = `
           <div class="sniper-result-box" style="background: rgba(14, 165, 233, 0.12); border-color: rgba(56, 189, 248, 0.35); text-align: left; padding: 14px;">
             <div style="font-size: 0.95rem; font-weight: bold; color: #38bdf8; margin-bottom: 8px; text-align: center;">🎯 ${news.title}</div>
@@ -1158,6 +1222,83 @@
 
       document.getElementById('razvarotResultDisplay').innerHTML = timeText;
       document.getElementById('razvarotResultBox').style.display = 'block';
+    }
+
+    function calculateRazgon() {
+      const trend = document.getElementById('trendSelect').value;
+      const high = parseFloat(document.getElementById('highInput').value);
+      const low = parseFloat(document.getElementById('lowInput').value);
+
+      if (isNaN(low) || isNaN(high)) {
+          alert("Iltimos, ham High, ham Low narxlarini kiriting!");
+          return;
+      }
+
+      if (high <= low) {
+          alert("High narxi Low narxidan katta bo'lishi kerak!");
+          return;
+      }
+
+      const range = high - low;
+      const ratios = [
+          { name: "1-Bosqich Razgon Zonasi", val: 0.618 },
+          { name: "2-Bosqich Chuqur Zona", val: 0.786 }
+      ];
+
+      let htmlContent = '';
+      const resultBox = document.getElementById('resultContainerBox');
+      const titleEl = document.getElementById('resultTitle');
+
+      if (trend === 'BUY') {
+          resultBox.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+          titleEl.className = 'section-title buy-title';
+          titleEl.innerText = '🟢 BUY RAZGON ZONALARI';
+
+          ratios.forEach(item => {
+              const exactPrice = high - (range * item.val);
+              const entryMin = (exactPrice - (range * 0.005)).toFixed(2);
+              const entryMax = (exactPrice + (range * 0.005)).toFixed(2);
+              const sl = (low - (range * 0.02)).toFixed(2);
+              const tp = (high + (range * 0.20)).toFixed(2);
+
+              htmlContent += `
+                  <div class="zone-card">
+                      <div class="zone-header"><span>${item.name}</span></div>
+                      <div class="zone-details">
+                          <div class="col"><span>ENTRY</span><b class="entry-zone">${entryMin}-${entryMax}</b></div>
+                          <div class="col"><span>SL</span><b class="sl-price">${sl}</b></div>
+                          <div class="col"><span>TP</span><b class="tp-price">${tp}</b></div>
+                      </div>
+                  </div>
+              `;
+          });
+      } else {
+          resultBox.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+          titleEl.className = 'section-title sell-title';
+          titleEl.innerText = '🔴 SELL RAZGON ZONALARI';
+
+          ratios.forEach(item => {
+              const exactPrice = low + (range * item.val);
+              const entryMin = (exactPrice - (range * 0.005)).toFixed(2);
+              const entryMax = (exactPrice + (range * 0.005)).toFixed(2);
+              const sl = (high + (range * 0.02)).toFixed(2);
+              const tp = (low - (range * 0.20)).toFixed(2);
+
+              htmlContent += `
+                  <div class="zone-card">
+                      <div class="zone-header"><span>${item.name}</span></div>
+                      <div class="zone-details">
+                          <div class="col"><span>ENTRY</span><b class="entry-zone">${entryMin}-${entryMax}</b></div>
+                          <div class="col"><span>SL</span><b class="sl-price">${sl}</b></div>
+                          <div class="col"><span>TP</span><b class="tp-price">${tp}</b></div>
+                      </div>
+                  </div>
+              `;
+          });
+      }
+
+      document.getElementById('zoneResults').innerHTML = htmlContent;
+      document.getElementById('resultsArea').style.display = 'flex';
     }
 
     function loadAdminPanel() {
